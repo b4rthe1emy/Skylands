@@ -10,9 +10,9 @@ bot = commands.Bot(
     intents=nextcord.Intents.all(),
 )
 
-from cogs.polls import Poll
+from cogs.polls import PollCommands
 
-bot.add_cog(Poll())
+bot.add_cog(PollCommands())
 bot.add_all_cog_commands()
 
 
