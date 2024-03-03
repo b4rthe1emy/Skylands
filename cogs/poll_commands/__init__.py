@@ -1,7 +1,7 @@
 import nextcord
 from nextcord.ext import commands
 from rich import print
-import datetime
+import time
 import dotenv
 
 from .polls_tracker import *
@@ -61,13 +61,13 @@ class PollCommands(commands.Cog):
                 f"Supprimé avec succès le sondage {poll_id}.", ephemeral=True
             )
 
-    @poll.subcommand(name="créer", description="Créer un sondage.")
+    @poll.subcommand(name="créer", description="Crée un sondage.")
     async def new(
         self,
         interaction: nextcord.Interaction,
         title=nextcord.SlashOption("titre", "Titre du sondage", True),
         options=nextcord.SlashOption(
-            "options", 'Toutes les réponses séparées par ";"', True
+            "options", 'Les options séparées par ";" et ENTRES GUILLEMETS', True
         ),
         multiple_votes_allowed=nextcord.SlashOption(
             "autoriser_plusieurs_votes",
@@ -75,8 +75,20 @@ class PollCommands(commands.Cog):
             True,
             choices={"Oui": "1", "Non": "0"},
         ),
+        end=nextcord.SlashOption(
+            "fin_automatique__en_heures",
+            "Le sondage se terminera automatiquement au bout de cette durée. ex: 6.5 -> 6 heures et 30 min",
+            False,
+        ),
     ):
+        if options[0] != '"' or options[-1] != '"':
+            await interaction.response.send_message(
+                "Les options doivent être entre guillemets, comme indiqué dans la description de l'argument.",
+                ephemeral=True,
+            )
+            return
 
+        options = options[1:-1]
         list_options: list[str] = options.split(";")
 
         formated_options: str = ""
@@ -101,21 +113,40 @@ class PollCommands(commands.Cog):
             self.polls_tracker,
             custom_emojis,
         )
+        try:
+            await interaction.response.send_message(
+                embed=nextcord.Embed(
+                    title=title,
+                    description=formated_options,
+                    colour=0x3498DB,
+                ),
+                view=view,
+            )
+        except nextcord.errors.HTTPException:
 
-        poll_message: nextcord.Message = await interaction.response.send_message(
-            embed=nextcord.Embed(
-                title=title,
-                description=formated_options,
-                colour=0x3498DB,
-            ),
-            view=view,
-        )
+            await interaction.response.send_message(
+                "Un ou plusieurs des émojis que tu as entré : "
+                + ", ".join(
+                    [
+                        (option[0] if option[0] != " " else "<aucun>")
+                        for option in list_options
+                    ]
+                )
+                + ", ne sont pas un/des émoji(s) valide(s). Si tu veux les nombres de base (0️⃣, 1️⃣, 2️⃣...) mets un espace avant l'option.",
+                ephemeral=True,
+            )
+
+        if end is not None:
+            end_timestamp = time.time() + (float(end) * 3600)
+        else:
+            end_timestamp = 0
 
         await self.polls_tracker.new_poll(
             Poll(
                 poll_id,
                 title,
                 list_options,
+                end_timestamp,
                 multiple_votes_allowed == "1",
             )
         )

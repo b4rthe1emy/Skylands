@@ -23,7 +23,7 @@ class Poll:
         self.multiple_votes_allowed: bool = multiple_votes_allowed
         self.options: list[str] = options
         self.votes = votes
-        self.end_timestamp: int = end_timestamp
+        self.end_timestamp: float = end_timestamp
 
         if votes is None:
             self.votes: list[list[int]] = []
@@ -138,10 +138,10 @@ class PollsTracker:
         return {
             "id": poll.id,
             "title": poll.title,
-            "multiple_votes_allowed": poll.multiple_votes_allowed,
-            "votes": poll.votes,
-            "end_timestamp": poll.end_timestamp,
             "options": poll.options,
+            "multiple_votes_allowed": poll.multiple_votes_allowed,
+            "end_timestamp": poll.end_timestamp,
+            "votes": poll.votes,
         }
 
     def dict_to_poll(self, poll: dict) -> Poll:
