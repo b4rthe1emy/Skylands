@@ -51,10 +51,6 @@ class ModerationCommands(commands.Cog):
         default_member_permissions=nextcord.Permissions(administrator=True),
     )
     async def mute(self, interaction: nextcord.Interaction, member: nextcord.Member):
-        error_happended = await self.handle_mute_member_errors(member, interaction)
-        if error_happended:
-            return
-
         member_role_ids = [role.id for role in member.roles]
 
         if self.server.owner == member:
@@ -69,6 +65,10 @@ class ModerationCommands(commands.Cog):
                 "Je ne peux pas rendre muet un bot car ses fonctionnalités riquent de se casser.",
                 ephemeral=True,
             )
+            return
+
+        error_happended = await self.handle_mute_member_errors(member, interaction)
+        if error_happended:
             return
 
         if MUTED_ROLE_ID in member_role_ids and MEMBER_ROLE_ID not in member_role_ids:
