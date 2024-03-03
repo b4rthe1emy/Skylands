@@ -1,11 +1,11 @@
 import nextcord
 from nextcord.ext import commands
 from rich import print
-
+import datetime
 import dotenv
 
 from .polls_tracker import *
-
+from .poll_buttons import *
 
 dotenv_file = dotenv.find_dotenv()
 ADMIN_ROLE_ID = str(dotenv.get_key(dotenv_file, "ADMIN_ROLE_ID"))
@@ -33,15 +33,18 @@ class PollCommands(commands.Cog):
         """
         pass
 
-    @poll.subcommand(name="temp_vote")
-    async def temp_vote(
+    @poll.subcommand(
+        name="résultats",
+        description="Affiche le nombre de votes pour chaque option du sondage qui a cette ID.",
+    )
+    async def results(
         self,
         interaction: nextcord.Interaction,
-        poll_id=nextcord.SlashOption("id_du_sondage", required=True),
-        option=nextcord.SlashOption("option", required=True),
+        poll_id=nextcord.SlashOption(
+            "id_du_sondage", "L'ID du sondage à voir les résultats", True
+        ),
     ):
-        self.polls_tracker.vote(poll_id, option, interaction)
-        interaction.response.send_message(f"ok, voted for {option}")
+        await self.polls_tracker.poll_results(poll_id, interaction)
 
     @poll.subcommand(
         name="supprimer", description="Supprime le sondage qui a cette ID."
@@ -74,16 +77,30 @@ class PollCommands(commands.Cog):
         ),
     ):
 
-        list_options = options.split(";")
+        list_options: list[str] = options.split(";")
 
         formated_options: str = ""
         number = 0
+        custom_emojis: list[str] = []
         for option in list_options:
-            formated_options += self.number_emojis[number] + " "
-            formated_options += option + "\n"
+
+            if option.startswith(" "):
+                formated_options += self.number_emojis[number]
+                formated_options += option + "\n"
+                custom_emojis.append(self.number_emojis[number])
+            else:
+                formated_options += option + "\n"
+                custom_emojis.append(option[0])
+
             number += 1
 
-        # view = polls_buttons.get_view(len(list_options))
+        poll_id = self.polls_tracker.get_new_id()
+
+        view = get_view(len(list_options) - 1)(
+            poll_id,
+            self.polls_tracker,
+            custom_emojis,
+        )
 
         poll_message: nextcord.Message = await interaction.response.send_message(
             embed=nextcord.Embed(
@@ -91,14 +108,14 @@ class PollCommands(commands.Cog):
                 description=formated_options,
                 colour=0x3498DB,
             ),
+            view=view,
         )
 
-        self.polls_tracker.new_poll(
+        await self.polls_tracker.new_poll(
             Poll(
-                self.polls_tracker.get_new_id(),
+                poll_id,
                 title,
                 list_options,
-                poll_message,
-                multiple_votes_allowed == 1,
+                multiple_votes_allowed == "1",
             )
         )

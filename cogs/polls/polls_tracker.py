@@ -6,56 +6,64 @@ import random
 import dotenv
 
 
-class PollVote:
-    def __init__(self, user_id: int) -> None:
-        self.user_id = user_id
-
-
 class Poll:
     def __init__(
         self,
         poll_id: int,
         title: str,
         options: list[str],
-        message: nextcord.Message,
         multiple_votes_allowed: bool,
+        end_timestamp: int,
+        votes: list[int] = None,
     ) -> None:
 
         self.id: int = poll_id
-        self.message: nextcord.Message = message
         self.title: str = title
 
         self.multiple_votes_allowed: bool = multiple_votes_allowed
         self.options: list[str] = options
-        self.votes: list[list[PollVote]] = [[]] * len(options)
+        self.votes = votes
+        self.end_timestamp: int = end_timestamp
 
-    def vote(
+        if votes is None:
+            self.votes: list[list[int]] = []
+            for i in range(len(options)):
+                self.votes.append([].copy())
+
+    async def vote(
         self,
         user_id: int,
         option_id: int,
         interaction: nextcord.Interaction,
     ) -> None:
-
+        option_id = int(option_id)
         if not self.multiple_votes_allowed:
             for option in self.votes:
-                if user_id in [vote.user_id for vote in option]:
-                    interaction.response.send_message(
-                        "Vous avez déjà voté pour ce sondage. Utilisez */[NOT_IMPLEMENTD_COMMAND]* pour annuler votre vote",
+                if user_id in option:
+                    await interaction.response.send_message(
+                        "Tu as déjà voté pour ce sondage. Utilise le bouton `Annuler mon/mes vote(s)` pour annuler ton vote.",
                         ephemeral=True,
                     )
                     return
 
-        if [vote.user_id for vote in self.votes[option_id]] == user_id:
-            interaction.response.send_message(
-                f"Vous avez déjà voté pour l'option n°{option_id}.", ephemeral=True
+        if int(user_id) in self.votes[option_id]:
+            await interaction.response.send_message(
+                f"Tu as déjà voté pour l'option {option_id}.", ephemeral=True
             )
             return
 
-        self.votes[option_id].append(PollVote(user_id))
+        self.votes[option_id].append(user_id)
+        await interaction.response.send_message(
+            f"Voté pour l'option {option_id}. Clique sur `Voir mon/mes vote(s)` pour voir tous tes votes sur ce sondage.",
+            ephemeral=True,
+        )
 
     def clear_all_votes_from_user(self, user_id: int) -> int:
         for option in self.votes:
-            [vote.user_id for vote in option].remove(user_id)
+            try:
+                option.remove(user_id)
+            except ValueError:
+                pass
 
 
 class PollsTracker:
@@ -71,50 +79,124 @@ class PollsTracker:
 
         return id_attempt
 
-    async def delete_poll(self, poll_id, interaction: nextcord.Interaction) -> bool:
-        with open(self.polls_file, mode="r") as file:
-            polls: list[dict] = json.loads(file.read())
-            try:
-                poll_index = [poll["id"] for poll in polls].index(poll_id)
-            except ValueError:
-                await interaction.response.send_message(
-                    f"Le sondage {poll_id} n'existe pas.", ephemeral=True
-                )
-                return False
+    async def poll_results(self, poll_id, interaction: nextcord.Interaction):
+        polls = await self.get_polls()
+        poll_index = await self.get_poll_index(poll_id, interaction)
 
-            polls.pop(poll_index)
+        votes = polls[poll_index]["votes"]
+        options = polls[poll_index]["options"]
+        message = ""
+        for option_id, option in enumerate(votes):
+            message += (
+                options[option_id]
+                + f" : **"
+                + str(len(option))
+                + " vote"
+                + ("s" if len(option) >= 2 else "")
+                + "**"
+            )
+            message += "\n"
+
+        await interaction.response.send_message(
+            embed=nextcord.Embed(
+                title=f'Résultats du sondage "{polls[poll_index]["title"]}" :',
+                description=message,
+                colour=0x3498DB,
+            )
+        )
+
+    async def delete_poll(self, poll_id, interaction: nextcord.Interaction) -> bool:
+        polls = await self.get_polls()
+        poll_index = await self.get_poll_index(poll_id, interaction)
+
+        polls.pop(poll_index)
 
         with open(self.polls_file, mode="w") as file:
             file.write(json.dumps(polls))
 
         return True
 
-    def new_poll(self, poll: Poll):
+    async def get_polls(self) -> list[dict]:
         with open(self.polls_file, mode="r") as file:
             polls: list[dict] = json.loads(file.read())
 
+        return polls
+
+    async def get_poll_index(self, poll_id, interaction: nextcord.Interaction):
+        with open(self.polls_file, mode="r") as file:
+            polls: list[dict] = json.loads(file.read())
+            try:
+                poll_index: int = [poll["id"] for poll in polls].index(int(poll_id))
+                return poll_index
+            except ValueError:
+                await interaction.response.send_message(
+                    f"Ce sondage a été supprimé.",
+                    ephemeral=True,
+                )
+
+    def poll_to_dict(self, poll: Poll) -> dict:
+        return {
+            "id": poll.id,
+            "title": poll.title,
+            "multiple_votes_allowed": poll.multiple_votes_allowed,
+            "votes": poll.votes,
+            "end_timestamp": poll.end_timestamp,
+            "options": poll.options,
+        }
+
+    def dict_to_poll(self, poll: dict) -> Poll:
+        return Poll(
+            poll["id"],
+            poll["title"],
+            poll["options"],
+            poll["multiple_votes_allowed"],
+            poll["end_timestamp"],
+            poll["votes"],
+        )
+
+    async def clear_votes(self, poll_id, user_id, interaction: nextcord.Interaction):
+        polls = await self.get_polls()
+        poll_index = await self.get_poll_index(poll_id, interaction)
+
+        if poll_index is None:
+            return
+
         with open(self.polls_file, mode="w") as file:
-            new_poll = {
-                "id": poll.id,
-                "title": poll.title,
-                "multiple_votes_allowed": poll.multiple_votes_allowed,
-                "votes": poll.votes,
-                "options": poll.options,
-            }
+
+            poll = self.dict_to_poll(polls[poll_index])
+            poll.clear_all_votes_from_user(user_id)
+            polls[poll_index] = self.poll_to_dict(poll)
+
+            file.write(json.dumps(polls))
+            del poll
+
+        await interaction.response.send_message(
+            "Tous tes votes à ce sondage ont été supprimés.", ephemeral=True
+        )
+
+    async def new_poll(self, poll: Poll):
+        polls = await self.get_polls()
+
+        with open(self.polls_file, mode="w") as file:
+            new_poll = self.poll_to_dict(poll)
             polls.append(new_poll)
             polls = json.dumps(polls)
 
             file.write(polls)
             print("New poll:", new_poll)
 
-    def vote(self, poll_id: int, option: int, interaction: nextcord.Interaction):
-        with open(self.polls_file, mode="r") as file:
-            polls: list[dict] = json.loads(file.read())
+    async def vote(self, poll_id: int, option: int, interaction: nextcord.Interaction):
+        polls = await self.get_polls()
+        poll_index = await self.get_poll_index(poll_id, interaction)
+
+        if poll_index is None:
+            return
 
         with open(self.polls_file, mode="w") as file:
-            poll_index = [poll["id"] for poll in polls].index(poll_id)
 
-            polls[poll_index]["votes"][option].append(PollVote(interaction.user.id))
+            poll = self.dict_to_poll(polls[poll_index])
+            await poll.vote(interaction.user.id, option, interaction)
+            polls[poll_index] = self.poll_to_dict(poll)
 
-        interaction.response.send_message("g pas fini de le coder")
-        raise NotImplementedError("g pas fini")
+            file.write(json.dumps(polls))
+            del poll
