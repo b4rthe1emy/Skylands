@@ -28,7 +28,7 @@ class ModerationCommands(commands.Cog):
 
         if MUTED_ROLE_ID in member_role_ids and MEMBER_ROLE_ID in member_role_ids:
             await interaction.response.send_message(
-                f"Erreur: l'utilisateur a le rôle {muted_role.mention} et le rôle {member_role.mention}, ce qui n'est pas possible.",
+                f"# Erreur\nL'utilisateur a le rôle {muted_role.mention} **et** le rôle {member_role.mention}, ce qui n'est pas possible.\nEssaye d'en enlever un et réessaye car il peut en avoir qu'un seul à la fois.",
                 ephemeral=True,
             )
             return True
@@ -38,7 +38,7 @@ class ModerationCommands(commands.Cog):
             and MEMBER_ROLE_ID not in member_role_ids
         ):
             await interaction.response.send_message(
-                f"Erreur: l'utilisateur n'a ni le rôle {muted_role.mention} ni le rôle {member_role.mention}, ce qui n'est pas possible.",
+                f"# Erreur\nL'utilisateur n'a **ni** le rôle {muted_role.mention} **ni** le rôle {member_role.mention}, ce qui n'est pas possible.\nEssaye de lui rajouter le rôle {member_role.mention} et réessaye.",
                 ephemeral=True,
             )
             return True
@@ -81,8 +81,8 @@ class ModerationCommands(commands.Cog):
         muted_role = self.server.get_role(MUTED_ROLE_ID)
         member_role = self.server.get_role(MEMBER_ROLE_ID)
 
-        await member.add_roles(muted_role)
         await member.remove_roles(member_role)
+        await member.add_roles(muted_role)
 
         await member.edit(nick=("[MUET] " + member.global_name))
 
