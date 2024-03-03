@@ -3,16 +3,19 @@ from nextcord.ext import commands
 from rich import print
 import dotenv
 
-dotenv_file = dotenv.find_dotenv()
-TOKEN = dotenv.get_key(dotenv_file, "DISCORD_TOKEN")
+TOKEN = dotenv.get_key(dotenv.find_dotenv(), "DISCORD_TOKEN")
 
 bot = commands.Bot(
     intents=nextcord.Intents.all(),
 )
 
-from cogs.polls import PollCommands
+from cogs.poll_commands import PollCommands
+from cogs.miscellaneous_commands import MiscellaneousCommands
+from cogs.moderation_commands import ModerationCommands
 
 bot.add_cog(PollCommands())
+bot.add_cog(MiscellaneousCommands())
+bot.add_cog(ModerationCommands())
 bot.add_all_cog_commands()
 
 
