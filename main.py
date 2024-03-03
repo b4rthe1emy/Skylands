@@ -14,7 +14,7 @@ from cogs.miscellaneous_commands import MiscellaneousCommands
 from cogs.moderation_commands import ModerationCommands
 
 bot.add_cog(PollCommands())
-bot.add_cog(MiscellaneousCommands())
+bot.add_cog(MiscellaneousCommands(bot))
 bot.add_cog(ModerationCommands())
 bot.add_all_cog_commands()
 
