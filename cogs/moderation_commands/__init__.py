@@ -5,6 +5,7 @@ import dotenv
 
 MUTED_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MUTED_MEMBER_ROLE_ID"))
 MEMBER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MEMBER_ROLE_ID"))
+ADMIN_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "ADMIN_ROLE_ID"))
 
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
 
@@ -39,6 +40,13 @@ class ModerationCommands(commands.Cog):
         ):
             await interaction.response.send_message(
                 f"# Erreur\nL'utilisateur n'a **ni** le rôle {muted_role.mention} **ni** le rôle {member_role.mention}, ce qui n'est pas possible.\nEssaye de lui rajouter le rôle {member_role.mention} et réessaye.",
+                ephemeral=True,
+            )
+            return True
+
+        if ADMIN_ROLE_ID in member_role_ids:
+            await interaction.response.send_message(
+                "Je ne peux pas rendre muet un administrateur car... bah je sais pas pourquoi en fait mais ça met une erreur donc je te préviens.",
                 ephemeral=True,
             )
             return True
