@@ -146,7 +146,7 @@ class PollCommands(commands.Cog):
                 poll_id,
                 title,
                 list_options,
-                end_timestamp,
                 multiple_votes_allowed == "1",
+                end_timestamp,
             )
         )
