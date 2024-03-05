@@ -13,12 +13,14 @@ from cogs.poll_commands import PollCommands
 from cogs.miscellaneous_commands import MiscellaneousCommands
 from cogs.moderation_commands import ModerationCommands
 from cogs.status_update_commands import StatusUpdateCommands
+from cogs.member_join import MemberJoin
 
 bot.add_cog(PollCommands())
 bot.add_cog(MiscellaneousCommands())
 bot.add_cog(ModerationCommands(bot))
 bot.add_cog(StatusUpdateCommands(bot))
 bot.add_all_cog_commands()
+MemberJoin(bot)
 
 
 @bot.event
