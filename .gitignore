@@ -1,6 +1,9 @@
 # Saved polls
 polls.json
 
+# Tests
+cogs/test/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
