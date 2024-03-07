@@ -6,13 +6,13 @@ from .polls_tracker import *
 async def count_poll(
     interaction: nextcord.Interaction,
     poll_id: int,
-    number: int,
+    option_id: int,
     tracker: PollsTracker,
 ):
-    if number == -1:
+    if option_id == -1:
         await tracker.clear_votes(poll_id, interaction.user.id, interaction)
     else:
-        await tracker.vote(poll_id, number, interaction)
+        await tracker.vote(poll_id, option_id, interaction)
 
 
 def get_view(options):
@@ -108,7 +108,6 @@ class PollButtons0(PollButtonsClearAll):
     )
     async def button0(self, btn: nextcord.Button, interaction: nextcord.Interaction):
         await count_poll(interaction, self.poll_id, 0, self.polls_tracker)
-        btn.disabled = True
 
 
 class PollButtons1(PollButtons0):
