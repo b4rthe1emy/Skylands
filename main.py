@@ -86,13 +86,13 @@ async def on_ready():
 """,
     )
     print(
-        f"[blue]▐[/blue][bold on blue]/[/bold on blue][blue]▌ [bold][blue]Slash Commands:[/bold][/blue]\n\n{slash_commands}\n"
+        f"[blue]▐[/blue][bold on blue]/[/bold on blue][blue]▌ [/blue][bold blue]Slash Commands:[/bold blue]\n\n{slash_commands}\n"
     )
     print(
-        f"[green]▐[/green][bold on green]@[/bold on green][green]▌ [bold][green]User Commands:[/bold][/green]\n\n{user_commands}\n"
+        f"[green]▐[/green][bold on green]@[/bold on green][green]▌ [/green][bold green]User Commands:[/bold green]\n\n{user_commands}\n"
     )
     print(
-        f"[yellow]▐[/yellow][bold on yellow]“[/bold on yellow][yellow]▌ [bold][yellow]Message Commands:[/bold][/yellow]\n\n{message_commands}\n"
+        f"[yellow]▐[/yellow][bold on yellow]“[/bold on yellow][yellow]▌ [/yellow][bold yellow]Message Commands:[/bold yellow]\n\n{message_commands}\n"
     )
 
 
