@@ -38,7 +38,8 @@ class StatusUpdateCommands(commands.Cog):
         return embed
 
     @nextcord.slash_command(
-        name="status",
+        "status",
+        "Modifie le status du serveur",
         dm_permission=False,
         default_member_permissions=nextcord.Permissions(402653184),
     )

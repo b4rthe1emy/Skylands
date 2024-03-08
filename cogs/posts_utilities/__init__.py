@@ -33,6 +33,7 @@ class PostUtilities(commands.Cog):
 
     @nextcord.slash_command(
         "post",
+        "Groupe de commandes réservées aux posts.",
         dm_permission=False,
         default_member_permissions=nextcord.Permissions(administrator=True),
     )
