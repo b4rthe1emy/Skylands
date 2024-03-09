@@ -44,11 +44,15 @@ def command_representation(command: nextcord.BaseApplicationCommand, shift: int 
             nextcord.application_command.SlashApplicationSubcommand,
         ),
     ):
-        output += (" " if int(number_of_spaces / 2) != number_of_spaces / 2 else "") + (
-            " ." * int(number_of_spaces / 2)
-            + " [bright_black italic]"
-            + command.description
-            + "[/bright_black italic]"
+        output += (
+            "[bright_black italic]"
+            + (" " if int(number_of_spaces / 2) != number_of_spaces / 2 else "")
+            + (
+                " ." * int(number_of_spaces / 2)
+                + " "
+                + command.description
+                + "[/bright_black italic]"
+            )
         )
     if (
         isinstance(command, nextcord.SlashApplicationCommand)
