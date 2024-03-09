@@ -35,12 +35,21 @@ def command_representation(command: nextcord.BaseApplicationCommand, shift: int 
         nextcord.application_command.MessageApplicationCommand: "[yellow]▐[/yellow][on yellow]“[/on yellow][yellow]▌[/yellow]",
     }
     output: str = command_symbol[type(command)] + " " + command.name
-    output += (
-        " " * (85 - len(output) - shift)
-        + "[bright_black italic]"
-        + command.description
-        + "[/bright_black italic]"
-    )
+
+    number_of_spaces = 85 - len(output) - shift
+    if isinstance(
+        command,
+        (
+            nextcord.application_command.SlashApplicationCommand,
+            nextcord.application_command.SlashApplicationSubcommand,
+        ),
+    ):
+        output += (" " if int(number_of_spaces / 2) != number_of_spaces / 2 else "") + (
+            " ." * int(number_of_spaces / 2)
+            + " [bright_black italic]"
+            + command.description
+            + "[/bright_black italic]"
+        )
     if (
         isinstance(command, nextcord.SlashApplicationCommand)
         and list(command.children.values()) != []
