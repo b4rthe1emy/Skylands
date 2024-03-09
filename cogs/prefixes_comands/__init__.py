@@ -36,6 +36,7 @@ ROLE_PREFIXS: dict[int, str | None] = {
     DEV_ROLE_ID: "Dev",
     WEB_DEV_ROLE_ID: "Dev Web",
     BUILDER_ROLE_ID: "Builder",
+    ANIMATOR_ROLE_ID: "Animateur",
     GUIDE_ROLE_ID: "Guide",
     DISCORD_STAFF_ROLE_ID: "Ed",
     STAFF_ROLE_ID: None,
