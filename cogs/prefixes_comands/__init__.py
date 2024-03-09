@@ -43,7 +43,7 @@ ROLE_PREFIXS: dict[int, str | None] = {
     YOUTUBER_ROLE_ID: "YT",
     STREAMER_ROLE_ID: "Streameur",
     BOOSTER_ROLE_ID: None,
-    FRIEND_ROLE_ID: "Ami",
+    FRIEND_ROLE_ID: None,
     MEMBER_ROLE_ID: None,
     MUTED_MEMBER_ROLE_ID: "MUET",
     NON_VERIFIED_MEMBER_ROLE_ID: None,
@@ -119,8 +119,11 @@ class PrefixesCommands(commands.Cog):
 
         if len(role_ids):
             biggest_role = self.server.get_role(role_ids[-1])
+            try:
+                prefix = ROLE_PREFIXS[biggest_role.id]
+            except AttributeError:
+                return
 
-            prefix = ROLE_PREFIXS[biggest_role.id]
             await user.edit(nick=f"{prefix} | {user.global_name}")
 
             if MUTED_MEMBER_ROLE_ID in role_ids:
