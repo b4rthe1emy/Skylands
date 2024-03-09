@@ -99,7 +99,10 @@ class ModerationCommands(commands.Cog):
             ephemeral=True,
         )
 
-    @nextcord.user_command(name="laisser parler")
+    @nextcord.user_command(
+        name="laisser parler",
+        default_member_permissions=nextcord.Permissions(administrator=True),
+    )
     async def unmute(self, interaction: nextcord.Interaction, member: nextcord.Member):
         error_happended = await self.handle_mute_member_errors(member, interaction)
         if error_happended:

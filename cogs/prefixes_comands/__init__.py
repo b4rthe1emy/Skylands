@@ -69,7 +69,10 @@ class PrefixesCommands(commands.Cog):
 
             await self.update_prefix(after)
 
-        @bot.user_command("actualiser le préfixe")
+        @bot.user_command(
+            "actualiser le préfixe",
+            default_member_permissions=nextcord.Permissions(134217728),
+        )
         async def refresh(
             interaction: nextcord.Interaction,
             user: nextcord.Member = nextcord.SlashOption(
