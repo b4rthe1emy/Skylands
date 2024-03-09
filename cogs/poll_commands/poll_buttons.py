@@ -101,11 +101,7 @@ class PollButtons0(PollButtonsClearAll):
         self.custom_emoji = custom_emojis[0]
         self.button0.emoji = self.custom_emoji
 
-    @nextcord.ui.button(
-        label="",
-        style=nextcord.ButtonStyle.gray,
-        row=1,
-    )
+    @nextcord.ui.button(label="", style=nextcord.ButtonStyle.gray, row=1)
     async def button0(self, btn: nextcord.Button, interaction: nextcord.Interaction):
         await count_poll(interaction, self.poll_id, 0, self.polls_tracker)
 

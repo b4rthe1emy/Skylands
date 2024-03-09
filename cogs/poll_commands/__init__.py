@@ -75,8 +75,8 @@ class PollCommands(commands.Cog):
             True,
             choices={"Oui": "1", "Non": "0"},
         ),
-        end=nextcord.SlashOption(
-            "fin_automatique__en_heures",
+        end: float = nextcord.SlashOption(
+            "fin_automatique_en_heures",
             "Le sondage se terminera automatiquement au bout de cette durée. ex: 6.5 -> 6 heures et 30 min",
             False,
         ),
@@ -148,5 +148,6 @@ class PollCommands(commands.Cog):
                 list_options,
                 multiple_votes_allowed == "1",
                 end_timestamp,
-            )
+            ),
+            interaction,
         )

@@ -5,6 +5,10 @@ import json
 import random
 import dotenv
 
+import datetime
+import time
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 
 class Poll:
     def __init__(
@@ -69,6 +73,7 @@ class Poll:
 class PollsTracker:
     polls_file = dotenv.get_key(dotenv.find_dotenv(), "SAVED_POLLS_FILE")
     MAX_POLLS = 999_999
+    active_atomatic_polls: list[Poll] = []
 
     def get_new_id(self) -> int:
         id_attempt = random.randint(1, self.MAX_POLLS)
@@ -79,7 +84,9 @@ class PollsTracker:
 
         return id_attempt
 
-    async def poll_results(self, poll_id, interaction: nextcord.Interaction):
+    async def poll_results(
+        self, poll_id, interaction: nextcord.Interaction, context: nextcord.TextChannel
+    ):
         polls = await self.get_polls()
         poll_index = await self.get_poll_index(poll_id, interaction)
 
@@ -97,7 +104,9 @@ class PollsTracker:
             )
             message += "\n"
 
-        await interaction.response.send_message(
+        send = interaction.response.send_message if interaction else context.send
+
+        await send(
             embed=nextcord.Embed(
                 title=f'Résultats du sondage "{polls[poll_index]["title"]}" :',
                 description=message,
@@ -174,7 +183,7 @@ class PollsTracker:
             "Tous tes votes à ce sondage ont été supprimés.", ephemeral=True
         )
 
-    async def new_poll(self, poll: Poll):
+    async def new_poll(self, poll: Poll, interaction: nextcord.Interaction):
         polls = await self.get_polls()
 
         with open(self.polls_file, mode="w") as file:
@@ -184,6 +193,19 @@ class PollsTracker:
 
             file.write(polls)
             print("New poll:", new_poll)
+
+        scheduler = AsyncIOScheduler()
+        d = time.localtime(poll.end_timestamp)
+        date = datetime.datetime(
+            d.tm_year, d.tm_mon, d.tm_mday, d.tm_hour, d.tm_min, d.tm_sec, 0
+        )
+
+        async def job():
+            await self.poll_results(poll.id, None, interaction.channel)
+            await self.delete_poll(poll.id, interaction)
+
+        scheduler.add_job(job, "date", run_date=date)
+        scheduler.start()
 
     async def vote(self, poll_id: int, option: int, interaction: nextcord.Interaction):
         polls = await self.get_polls()
