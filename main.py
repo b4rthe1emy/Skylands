@@ -37,9 +37,9 @@ def command_representation(command: nextcord.BaseApplicationCommand, shift: int 
     output: str = command_symbol[type(command)] + " " + command.name
     output += (
         " " * (85 - len(output) - shift)
-        + "[black italic]"
+        + "[bright_black italic]"
         + command.description
-        + "[/black italic]"
+        + "[/bright_black italic]"
     )
     if (
         isinstance(command, nextcord.SlashApplicationCommand)
@@ -63,7 +63,7 @@ def get_commands(types: tuple[type]):
         if (type(command) in types)
     ]
     if not commands:
-        return "[black italic]None[/black italic]"
+        return "[bright_black italic]None[/bright_black italic]"
     return "\n".join(commands)
 
 
