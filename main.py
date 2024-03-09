@@ -16,6 +16,7 @@ from cogs.status_update_commands import StatusUpdateCommands
 from cogs.member_join import MemberJoin
 from cogs.posts_utilities import PostUtilities
 from cogs.prefixes_comands import PrefixesCommands
+from cogs.clear_channel_messages_command import ClearChannelMessagesCommand
 
 bot.add_cog(PollCommands())
 bot.add_cog(MiscellaneousCommands())
@@ -24,6 +25,7 @@ bot.add_cog(StatusUpdateCommands(bot))
 MemberJoin(bot)
 bot.add_cog(PostUtilities(bot))
 bot.add_cog(PrefixesCommands(bot))
+bot.add_cog(ClearChannelMessagesCommand())
 bot.add_all_cog_commands()
 
 
