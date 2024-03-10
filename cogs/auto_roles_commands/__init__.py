@@ -19,7 +19,7 @@ class AutoRolesCommands(commands.Cog):
 
     @auto_rôle.subcommand(
         "créer",
-        "Envoie un message explicatif avec des boutons pour s'inscrire ou se désinscrire.",
+        "Crée un auto-rôle.",
     )
     async def new(
         self,
@@ -44,7 +44,10 @@ class AutoRolesCommands(commands.Cog):
         )
         await self.tracker.send_message(interaction, ephemeral=True)
 
-    @auto_rôle.subcommand("renvoyer_message", "Renvoie le message avec les boutons")
+    @auto_rôle.subcommand(
+        "renvoyer_message",
+        "Renvoie le message explicatif avec des boutons pour s'inscrire ou se désinscrire.",
+    )
     async def resend_message(self, interaction: nextcord.Interaction):
         await self.tracker.send_message(interaction)
         await interaction.response.send_message(
