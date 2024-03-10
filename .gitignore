@@ -1,6 +1,9 @@
 # Saved polls
 polls.json
 
+# Saved auto-roles
+autoRoles.json
+
 # Tests
 cogs/test/*
 
