@@ -135,6 +135,7 @@ class PollCommands(commands.Cog):
                 + ", ne sont pas un/des émoji(s) valide(s). Si tu veux les nombres de base (0️⃣, 1️⃣, 2️⃣...) mets un espace avant l'option.",
                 ephemeral=True,
             )
+            return
 
         if end is not None:
             end_timestamp = time.time() + (float(end) * 3600)
