@@ -5,7 +5,9 @@ from rich import print
 import dotenv
 import json
 
-NOTIFS_CHANNEL_ID = int(dotenv.get_key(dotenv.find_dotenv(), "NOTIFS_CHANNEL_ID"))
+AUTO_ROLES_CHANNEL_ID = int(
+    dotenv.get_key(dotenv.find_dotenv(), "AUTO_ROLES_CHANNEL_ID")
+)
 AUTO_ROLES_FILE_PATH = dotenv.get_key(dotenv.find_dotenv(), "AUTO_ROLES_FILE_PATH")
 
 
@@ -86,7 +88,7 @@ class AutoRolesTracker:
         )
 
         guild = interaction.guild
-        channel = guild.get_channel(NOTIFS_CHANNEL_ID)
+        channel = guild.get_channel(AUTO_ROLES_CHANNEL_ID)
 
         embed.add_field(
             name="Choisissez un rôle en cliquant sur les boutons ci-dessous pour recevoir des **notifications** de :",
