@@ -61,7 +61,7 @@ class PrefixesCommands(commands.Cog):
 
     @nextcord.slash_command(
         "préfixe",
-        "Groupe de commandes réservées à la gestiondes préfixes.",
+        "Groupe de commandes réservées à la gestion des préfixes.",
         default_member_permissions=nextcord.Permissions(administrator=True),
     )
     async def prefix(self, interaction: nextcord.Interaction):
