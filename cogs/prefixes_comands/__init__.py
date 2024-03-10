@@ -59,6 +59,27 @@ class PrefixesCommands(commands.Cog):
     def skip_role_ids(self):
         return [role_id for role_id in ROLE_PREFIXS if ROLE_PREFIXS[role_id] is None]
 
+    @nextcord.slash_command(
+        "préfixe",
+        "Groupe de commandes réservées à la gestiondes préfixes.",
+        default_member_permissions=nextcord.Permissions(administrator=True),
+    )
+    async def prefix(self, interaction: nextcord.Interaction):
+        pass
+
+    @prefix.subcommand(
+        "actualiser_tout_le_monde",
+        "Actualise le préfixe de tous les membres du serveur.",
+    )
+    async def refresh_everyone(self, interaction: nextcord.Interaction):
+        member_count = interaction.guild.member_count
+        await interaction.response.send_message(
+            f'Actualisation de {member_count} membre{"s" if member_count >= 2 else ""}, cela peut prendre du temps.',
+            ephemeral=True,
+        )
+        for user in interaction.guild.members:
+            await self.update_prefix(user)
+
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
         self.bot: commands.Bot = bot
@@ -71,7 +92,7 @@ class PrefixesCommands(commands.Cog):
             await self.update_prefix(after)
 
         @bot.user_command(
-            "actualiser le préfixe",
+            "préfixe actualiser_membre",
             default_member_permissions=nextcord.Permissions(134217728),
         )
         async def refresh(
@@ -80,7 +101,6 @@ class PrefixesCommands(commands.Cog):
                 "utilisateur", "L'utilisateur à actualiser le préfixe."
             ),
         ):
-
             if self.server.owner == user:
                 await interaction.response.send_message(
                     "Je ne peux pas changer le pseudo du propriétaire du serveur ca je n'en ai pas la permission.",

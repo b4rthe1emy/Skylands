@@ -17,6 +17,8 @@ from cogs.member_join import MemberJoin
 from cogs.posts_utilities import PostUtilities
 from cogs.prefixes_comands import PrefixesCommands
 from cogs.clear_channel_messages_command import ClearChannelMessagesCommand
+from cogs.auto_roles_commands import AutoRolesCommands
+from cogs.test import TestCommands
 
 bot.add_cog(PollCommands())
 bot.add_cog(MiscellaneousCommands())
@@ -26,19 +28,24 @@ MemberJoin(bot)
 bot.add_cog(PostUtilities(bot))
 bot.add_cog(PrefixesCommands(bot))
 bot.add_cog(ClearChannelMessagesCommand())
+bot.add_cog(AutoRolesCommands())
+bot.add_cog(TestCommands())
 bot.add_all_cog_commands()
 
 
 def command_representation(command: nextcord.BaseApplicationCommand, shift: int = 0):
     command_symbol = {
-        nextcord.application_command.SlashApplicationCommand: "[blue]▐[/blue][white on blue]/[/white on blue][blue]▌[/blue]",
-        nextcord.application_command.SlashApplicationSubcommand: "[blue]▐[/blue][white on blue]/[/white on blue][blue]▌[/blue]",
-        nextcord.application_command.UserApplicationCommand: "[green]▐[/green][on green]@[/on green][green]▌[/green]",
-        nextcord.application_command.MessageApplicationCommand: "[yellow]▐[/yellow][on yellow]“[/on yellow][yellow]▌[/yellow]",
+        nextcord.SlashApplicationCommand: "[blue]▐[/blue][white on blue]/[/white on blue][blue]▌[/blue]",
+        nextcord.SlashApplicationSubcommand: "[blue]▐[/blue][white on blue]/[/white on blue][blue]▌[/blue]",
+        nextcord.UserApplicationCommand: "[green]▐[/green][on green]@[/on green][green]▌[/green]",
+        nextcord.MessageApplicationCommand: "[yellow]▐[/yellow][on yellow]“[/on yellow][yellow]▌[/yellow]",
     }
-    output: str = command_symbol[type(command)] + " " + command.name
+    output: str = command_symbol[type(command)]
+    if isinstance(command, nextcord.SlashApplicationCommand) and command.children:
+        output = "[blue]▐[/blue][white on blue]⤷[/white on blue][blue]▌[/blue]"
+    output += " " + command.name
 
-    number_of_spaces = 85 - len(output) - shift
+    number_of_spaces = 90 - len(output) - shift
     if isinstance(
         command,
         (
@@ -47,15 +54,13 @@ def command_representation(command: nextcord.BaseApplicationCommand, shift: int 
         ),
     ):
         output += (
-            "[bright_black italic]"
-            + (" " if int(number_of_spaces / 2) != number_of_spaces / 2 else "")
-            + (
-                " ." * int(number_of_spaces / 2)
-                + " "
-                + command.description
-                + "[/bright_black italic]"
-            )
+            "[bright_black italic] "
+            + ("╌" * number_of_spaces)
+            + " "
+            + command.description
+            + "[/bright_black italic]"
         )
+
     if (
         isinstance(command, nextcord.SlashApplicationCommand)
         and list(command.children.values()) != []
@@ -63,10 +68,12 @@ def command_representation(command: nextcord.BaseApplicationCommand, shift: int 
 
         children = list(command.children.values())
         for i, command in enumerate(children):
-            if i != len(children) - 1:
-                output += "\n ├── " + command_representation(command, shift=5)
+            if i == len(children) - 1:
+                output += "\n ┖──࢈"
             else:
-                output += "\n ╰── " + command_representation(command, shift=5)
+                output += "\n ┠──࢈"
+
+            output += command_representation(command, shift=shift + 5)
 
     return output
 
