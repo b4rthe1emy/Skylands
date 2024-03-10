@@ -18,11 +18,11 @@ class ClearChannelMessagesCommand(commands.Cog):
     ):
         if sure:
             await interaction.response.send_message(
-                "Tous les messages de ce salon vont être supprimés. Cette opération peut prendre longtemps, merci de patienter.",
+                "Les 100 derniers messages de ce salon vont être supprimés. Cette opération peut prendre longtemps, merci de patienter.",
                 ephemeral=True,
             )
             await interaction.channel.purge()
         else:
             await interaction.response.send_message(
-                'Met l\'option "sûr" à Vrai si tu es vraiment sûr.', ephemeral=True
+                "Met l'option `sûr` à Vrai si tu es vraiment sûr.", ephemeral=True
             )
