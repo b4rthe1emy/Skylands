@@ -200,12 +200,14 @@ class PollsTracker:
             d.tm_year, d.tm_mon, d.tm_mday, d.tm_hour, d.tm_min, d.tm_sec, 0
         )
 
-        async def job():
-            await self.poll_results(poll.id, None, interaction.channel)
-            await self.delete_poll(poll.id, interaction)
+        if poll.end_timestamp != 0:
 
-        scheduler.add_job(job, "date", run_date=date)
-        scheduler.start()
+            async def job():
+                await self.poll_results(poll.id, None, interaction.channel)
+                await self.delete_poll(poll.id, interaction)
+
+            scheduler.add_job(job, "date", run_date=date)
+            scheduler.start()
 
     async def vote(self, poll_id: int, option: int, interaction: nextcord.Interaction):
         polls = await self.get_polls()
