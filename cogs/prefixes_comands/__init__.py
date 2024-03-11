@@ -78,7 +78,10 @@ class PrefixesCommands(commands.Cog):
             ephemeral=True,
         )
         for user in interaction.guild.members:
-            await self.update_prefix(user)
+            try:
+                await self.update_prefix(user)
+            except nextcord.errors.Forbidden:
+                pass
 
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
@@ -141,7 +144,7 @@ class PrefixesCommands(commands.Cog):
             biggest_role = self.server.get_role(role_ids[-1])
             try:
                 prefix = ROLE_PREFIXS[biggest_role.id]
-            except AttributeError:
+            except KeyError:
                 return
 
             await user.edit(nick=f"{prefix} | {user.global_name}")
