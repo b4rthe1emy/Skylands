@@ -81,6 +81,10 @@ class PostUtilities(commands.Cog):
 
         await interaction.response.send_message("Ce post est terminé.")
 
+    @nextcord.slash_command("copier_tags_id", "tkt c fait pr les developeurs")
+    async def copy_tags_id(self, interaction: nextcord.Interaction):
+        print(interaction.channel.applied_tags)
+
     @post.subcommand(
         "réactiver",
         'Enlève le tag terminé, enlève la réaction du message original "✅" et déverrouille le post.',

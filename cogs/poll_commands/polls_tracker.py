@@ -5,8 +5,7 @@ import json
 import random
 import dotenv
 
-import datetime
-import time
+from utils.time_utils import to_datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
@@ -163,6 +162,24 @@ class PollsTracker:
             poll["votes"],
         )
 
+    async def edit_poll(
+        self, poll_id: int, new_poll: Poll, interaction: nextcord.Interaction
+    ):
+        polls = await self.get_polls()
+        poll_index = await self.get_poll_index(poll_id, interaction)
+
+        poll: Poll = self.dict_to_poll(polls[poll_index])
+
+        poll.end_timestamp = new_poll.end_timestamp
+        poll.id = new_poll.id
+        poll.multiple_votes_allowed = new_poll.multiple_votes_allowed
+        poll.title = new_poll.title
+
+        polls[poll_index] = self.poll_to_dict(poll)
+
+        with open(self.polls_file, mode="w") as file:
+            file.write(json.dumps(polls))
+
     async def clear_votes(self, poll_id, user_id, interaction: nextcord.Interaction):
         polls = await self.get_polls()
         poll_index = await self.get_poll_index(poll_id, interaction)
@@ -195,10 +212,7 @@ class PollsTracker:
             print("New poll:", new_poll)
 
         scheduler = AsyncIOScheduler()
-        d = time.localtime(poll.end_timestamp)
-        date = datetime.datetime(
-            d.tm_year, d.tm_mon, d.tm_mday, d.tm_hour, d.tm_min, d.tm_sec, 0
-        )
+        date = to_datetime(poll.end_timestamp)
 
         if poll.end_timestamp != 0:
 

@@ -9,6 +9,7 @@ from .poll_buttons import *
 
 dotenv_file = dotenv.find_dotenv()
 ADMIN_ROLE_ID = str(dotenv.get_key(dotenv_file, "ADMIN_ROLE_ID"))
+ADMIN_ONLY_CHANNEL_ID = int(dotenv.get_key(dotenv_file, "ADMIN_ONLY_CHANNEL_ID"))
 
 
 class PollCommands(commands.Cog):
@@ -88,38 +89,37 @@ class PollCommands(commands.Cog):
             )
             return
 
-        options = options[1:-1]
-        list_options: list[str] = options.split(";")
+        # options = options[1:-1]
+        # list_options: list[str] = options.split(";")
 
-        formated_options: str = ""
-        number = 0
-        custom_emojis: list[str] = []
-        for option in list_options:
+        # formated_options: str = ""
+        # number = 0
+        # custom_emojis: list[str] = []
+        # for option in list_options:
 
-            if option.startswith(" "):
-                formated_options += self.number_emojis[number]
-                formated_options += option + "\n"
-                custom_emojis.append(self.number_emojis[number])
-            else:
-                formated_options += option + "\n"
-                custom_emojis.append(option[0])
+        #     if option.startswith(" "):
+        #         formated_options += self.number_emojis[number]
+        #         formated_options += option + "\n"
+        #         custom_emojis.append(self.number_emojis[number])
+        #     else:
+        #         formated_options += option + "\n"
+        #         custom_emojis.append(option[0])
 
-            number += 1
+        #     number += 1
 
-        poll_id = self.polls_tracker.get_new_id()
+        # poll_id = self.polls_tracker.get_new_id()
 
-        view = get_view(len(list_options) - 1)(
-            poll_id,
-            self.polls_tracker,
-            custom_emojis,
+        # view = get_view(len(list_options) - 1)(
+        #     poll_id,
+        #     self.polls_tracker,
+        #     custom_emojis,
+        # )
+        embed, view, formated_options, list_options, poll_id = (
+            get_poll_message_embed_and_view(self, title, options)
         )
         try:
-            await interaction.response.send_message(
-                embed=nextcord.Embed(
-                    title=title,
-                    description=formated_options,
-                    colour=0x3498DB,
-                ),
+            message = await interaction.channel.send(
+                embed=embed,
                 view=view,
             )
         except nextcord.errors.HTTPException:
@@ -152,3 +152,14 @@ class PollCommands(commands.Cog):
             ),
             interaction,
         )
+        embed = get_control_panel_embed(
+            title, poll_id, len(list_options), multiple_votes_allowed
+        )
+        await interaction.guild.get_channel(ADMIN_ONLY_CHANNEL_ID).send(
+            embed=embed,
+            view=PollButtonsControlPannel(
+                poll_id, self.polls_tracker, message.id, message.channel.id
+            ),
+        )
+
+        await interaction.response.send_message("Sondage créé.", ephemeral=True)

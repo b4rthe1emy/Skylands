@@ -1,6 +1,71 @@
+from nextcord.utils import MISSING
 from rich import print
 import nextcord
 from .polls_tracker import *
+from utils.time_utils import to_datetime
+
+NUMBER_EMOJIS = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
+
+
+def get_control_panel_embed(title, poll_id, len_list_options, multiple_votes_allowed):
+    embed = nextcord.Embed(
+        title='Control panel pour le sondage : "' + title + '"',
+        description=f"**Ceci est le panneau de configuration du sondage que vous venez de créer.**",
+        colour=0x3498DB,
+        timestamp=to_datetime(),
+    )
+    embed.add_field(
+        name="❓ Pour plus d'informations, merci de regarder le message original.",
+        value="",
+    )
+    embed.add_field(name="`int` ID", value="```" + str(poll_id) + "```", inline=False)
+    embed.add_field(
+        name="`int` Nombre de réponses possibles",
+        value=str(len_list_options),
+        inline=False,
+    )
+    embed.add_field(
+        name="`bool` Autoriser plusieurs votes",
+        value=("Oui" if multiple_votes_allowed == "1" else "Non"),
+        inline=False,
+    )
+    return embed
+
+
+def get_poll_message_embed_and_view(self, title, options):
+
+    options = options[1:-1]
+    list_options: list[str] = options.split(";")
+
+    formated_options: str = ""
+    number = 0
+    custom_emojis: list[str] = []
+    for option in list_options:
+
+        if option.startswith(" "):
+            formated_options += NUMBER_EMOJIS[number]
+            formated_options += option + "\n"
+            custom_emojis.append(NUMBER_EMOJIS[number])
+        else:
+            formated_options += option + "\n"
+            custom_emojis.append(option[0])
+
+        number += 1
+
+    poll_id = self.polls_tracker.get_new_id()
+
+    view: nextcord.ui.View = get_view(len(list_options) - 1)(
+        poll_id,
+        self.polls_tracker,
+        custom_emojis,
+    )
+    embed = nextcord.Embed(
+        title=title,
+        description=formated_options,
+        colour=0x3498DB,
+        timestamp=to_datetime(),
+    )
+    return (embed, view, formated_options, list_options, poll_id)
 
 
 async def count_poll(
@@ -15,7 +80,7 @@ async def count_poll(
         await tracker.vote(poll_id, option_id, interaction)
 
 
-def get_view(options):
+def get_view(options) -> nextcord.ui.View:
     if options == 0:
         return PollButtons0
     if options == 1:
@@ -40,10 +105,119 @@ def get_view(options):
         return PollButtons10
 
 
+class ControlPanelModal(nextcord.ui.Modal):
+    def __init__(self, polls_tracker: PollsTracker, buttons_control_pannel) -> None:
+        self.polls_tracker: PollsTracker = polls_tracker
+        self.buttons_control_pannel = buttons_control_pannel
+
+    async def setup(self, interaction: nextcord.Interaction, poll_id: int):
+        self.poll_id: int = poll_id
+
+        super().__init__(timeout=None, title=f"Renommer le sondage {self.poll_id}")
+
+        polls = await self.polls_tracker.get_polls()
+        poll_index = await self.polls_tracker.get_poll_index(self.poll_id, interaction)
+
+        self.poll: Poll = self.polls_tracker.dict_to_poll(polls[poll_index])
+
+        self.new_name = nextcord.ui.TextInput(
+            "Nouveau nom",
+            default_value=self.poll.title,
+            placeholder="Nouveau nom",
+            required=True,
+        )
+        self.add_item(self.new_name)
+
+        self.new_mva = nextcord.ui.TextInput(
+            "Autoriser plusieurs votes (1 : Oui, 0 : Non)",
+            default_value=("1" if self.poll.multiple_votes_allowed else "0"),
+            placeholder="Autoriser plusieurs votes",
+            required=True,
+            max_length=1,
+        )
+        self.add_item(self.new_mva)
+
+    async def callback(self, callback_interaction: nextcord.Interaction):
+
+        await self.polls_tracker.edit_poll(
+            self.poll_id,
+            Poll(
+                self.poll.id,
+                self.new_name.value,
+                self.poll.options,
+                bool(self.new_mva.value == "1"),
+                self.poll.end_timestamp,
+                self.poll.votes,
+            ),
+            callback_interaction,
+        )
+        await callback_interaction.guild.get_channel_or_thread(
+            self.buttons_control_pannel.message_channel_id
+        ).get_partial_message(self.buttons_control_pannel.message_id).edit(
+            embed=get_poll_message_embed_and_view()
+        )
+
+        await callback_interaction.message.edit(
+            embed=get_control_panel_embed(
+                self.new_name.value,
+                self.poll_id,
+                len(self.poll.options),
+                (self.new_mva.value == "1"),
+            ),
+        )
+
+
+class PollButtonsControlPannel(nextcord.ui.View):
+    def __init__(
+        self, poll_id: int, polls_tracker, message_id: int, message_channel_id: int
+    ):
+        super().__init__(timeout=None)  # , prevent_update=False)
+        self.poll_id = poll_id
+        self.polls_tracker: PollsTracker = polls_tracker
+        self.message_id: int = message_id
+        self.message_channel_id: int = message_channel_id
+
+    @nextcord.ui.button(label="Supprimer", emoji="🗑️", style=nextcord.ButtonStyle.red)
+    async def delete_poll(
+        self, button: nextcord.Button, interaction: nextcord.Interaction
+    ):
+        await self.polls_tracker.delete_poll(self.poll_id, interaction)
+        await interaction.response.send_message("Sondage supprimé", ephemeral=True)
+        await interaction.message.edit(
+            content=None,
+            embed=nextcord.Embed(
+                title="Control panel : Ce sondage a été supprimé.",
+                timestamp=to_datetime(),
+            ),
+            view=None,
+        )
+        await interaction.guild.get_channel_or_thread(
+            self.message_channel_id
+        ).get_partial_message(self.message_id).edit(
+            content=None,
+            embed=nextcord.Embed(
+                title="Ce sondage est terminé.", timestamp=to_datetime()
+            ),
+            view=None,
+        )
+
+    @nextcord.ui.button(
+        label="Modifier",
+        emoji="🖊️",
+        custom_id=("poll_edit_" + str(random.randint(0, 999_999_999))),
+    )
+    async def edit_poll(
+        self, button: nextcord.Button, interaction: nextcord.Interaction
+    ):
+        modal = ControlPanelModal(self.polls_tracker, self)
+        await modal.setup(interaction, self.poll_id)
+        await interaction.response.send_modal(modal)
+
+
 class PollButtonsClearAll(nextcord.ui.View):
 
     def __init__(self, poll_id: int, polls_tracker):
-        super().__init__()
+        super().__init__(timeout=None)
         self.poll_id = poll_id
         self.polls_tracker: PollsTracker = polls_tracker
 
