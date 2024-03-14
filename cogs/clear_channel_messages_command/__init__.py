@@ -12,17 +12,26 @@ class ClearChannelMessagesCommand(commands.Cog):
     async def clear_salon(
         self,
         interaction: nextcord.Interaction,
-        sure: bool = nextcord.SlashOption(
-            "sûr", "T'ES VRAIMENT SÛR???", default=False, required=False
+        sure=nextcord.SlashOption(
+            "sûr",
+            "T'ES VRAIMENT SÛR???",
+            required=False,
+            choices={"Oui": "1", "Non": "0"},
         ),
     ):
-        if sure:
+        if sure == "1":
+            try:
+                await interaction.channel.purge()
+            except AttributeError:
+                await interaction.response.send_message(
+                    "Je ne peut pas effacer les messages ici.", ephemeral=True
+                )
+                return
             await interaction.response.send_message(
                 "Les 100 derniers messages de ce salon vont être supprimés. Cette opération peut prendre longtemps, merci de patienter.",
                 ephemeral=True,
             )
-            await interaction.channel.purge()
         else:
             await interaction.response.send_message(
-                "Met l'option `sûr` à Vrai si tu es vraiment sûr.", ephemeral=True
+                "Met l'option `sûr` à Oui si tu es vraiment sûr.", ephemeral=True
             )
