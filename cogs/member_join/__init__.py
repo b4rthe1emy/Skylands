@@ -2,6 +2,7 @@ import nextcord
 from nextcord.ext import commands
 from rich import print
 import dotenv
+from utils import time_utils
 
 WELCOME_CHANNEL_ID = int(dotenv.get_key(dotenv.find_dotenv(), "WELCOME_CHANNEL_ID"))
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
@@ -24,12 +25,25 @@ class MemberJoin(commands.Cog):
             color=0x3498DB,
             title="**Bienvenue sur Skylands**",
             url="https://skylandsmc.fr",
+            timestamp=time_utils.to_datetime(),
         )
         embed.add_field(
             name=f"🛬 Bienvenue **{member.global_name}**, amuse toi bien sur 𝐒𝐤𝐲𝐥𝐚𝐧𝐝𝐬 ! *(tu es le membre #{self.skylands_guild.member_count})*",
             value="Tu peux lier ton compte Minecraft avec ton compte Discord en tapant la commande `/link` en jeu.",
         )
-        await self.welcome_channel.send(member.mention, embed=embed)
+
+        await self.welcome_channel.send(
+            member.mention,
+            embed=embed,
+            file=nextcord.File(
+                open(
+                    "/home/barth/Documents/GitHub/Skylands/assets/skylands_welcome.png",
+                    "rb",
+                ),
+                "image_welcome.png",
+                description="L'image de bienvenue accompagnée du message.",
+            ),
+        )
 
     @nextcord.slash_command(
         "welcome",
