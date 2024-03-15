@@ -9,6 +9,7 @@ AUTO_ROLES_CHANNEL_ID = int(
     dotenv.get_key(dotenv.find_dotenv(), "AUTO_ROLES_CHANNEL_ID")
 )
 AUTO_ROLES_FILE_PATH = dotenv.get_key(dotenv.find_dotenv(), "AUTO_ROLES_FILE_PATH")
+SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
 
 
 class AutoRole:
@@ -37,16 +38,22 @@ class AutoRolesButtons(nextcord.ui.View):
                 role_id = auto_role["role_id"]
                 has_role = bool(interaction.user.get_role(role_id))
 
-                if not has_role:
-                    await interaction.user.add_roles(
-                        interaction.guild.get_role(role_id)
-                    )
-                else:
+                if has_role:
                     await interaction.user.remove_roles(
                         interaction.guild.get_role(role_id)
                     )
+                else:
+                    try:
+                        await interaction.user.add_roles(
+                            interaction.guild.get_role(role_id)
+                        )
+                    except AttributeError:
+                        await interaction.response.send_message(
+                            "Le rôle n'a pas pu être attribué. Contactez les administrateurs et développeurs dans le salon <#1201270746983440385>.",
+                            ephemeral=True,
+                        )
 
-                print(auto_role)
+            style = int(auto_role["button_color"])
 
             button = nextcord.ui.Button(
                 label=auto_role["name"],
@@ -56,14 +63,16 @@ class AutoRolesButtons(nextcord.ui.View):
                     + "_"
                     + str(auto_role["role_id"])
                 ),
+                style=style,
             )
             button.callback = lambda interaction: callback(interaction, auto_role)
             self.add_item(button)
 
 
 class AutoRolesTracker:
-    def __init__(self) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.auto_roles_file: str = AUTO_ROLES_FILE_PATH
+        self.bot: commands.Bot = bot
 
     @property
     def auto_roles(self) -> list[dict]:
@@ -87,8 +96,9 @@ class AutoRolesTracker:
             title="Notifications", color=0x3498DB, url="https://skylandsmc.fr/"
         )
 
-        guild = interaction.guild
-        channel = guild.get_channel(AUTO_ROLES_CHANNEL_ID)
+        channel = self.bot.get_guild(SKYLANDS_GUILD_ID).get_channel(
+            AUTO_ROLES_CHANNEL_ID
+        )
 
         embed.add_field(
             name="Choisissez un rôle en cliquant sur les boutons ci-dessous pour recevoir des **notifications** de :",
@@ -106,7 +116,7 @@ class AutoRolesTracker:
 
         if ephemeral:
             await interaction.response.send_message(
-                "Voici un apercu des auto-rôles. Utilise </auto_rôle renvoyer_message:1216310345673478246> pour renvoyer le message.",
+                "Voici un apercu des auto-rôles. Utilise </auto_rôle renvoyer_message:1216344424670298283> pour renvoyer le message.",
                 embed=embed,
                 ephemeral=True,
             )
