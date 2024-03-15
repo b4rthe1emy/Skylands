@@ -71,13 +71,16 @@ class PrefixesCommands(commands.Cog):
         "actualiser_tout_le_monde",
         "Actualise le préfixe de tous les membres du serveur.",
     )
-    async def refresh_everyone(self, interaction: nextcord.Interaction):
+    async def refresh_everyone_command(self, interaction: nextcord.Interaction):
         member_count = interaction.guild.member_count
         await interaction.response.send_message(
             f'Actualisation de {member_count} membre{"s" if member_count >= 2 else ""}, cela peut prendre du temps.',
             ephemeral=True,
         )
-        for user in interaction.guild.members:
+        self.refresh_everyone(interaction.guild)
+
+    async def refresh_everyone(self, guild: nextcord.Guild):
+        for user in guild.members:
             try:
                 await self.update_prefix(user)
             except nextcord.errors.Forbidden:

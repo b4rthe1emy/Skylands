@@ -5,9 +5,9 @@ from .auto_roles_tracker import *
 
 
 class AutoRolesCommands(commands.Cog):
-    def __init__(self) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
-        self.tracker = auto_roles_tracker.AutoRolesTracker()
+        self.tracker = auto_roles_tracker.AutoRolesTracker(bot)
 
     @nextcord.slash_command(
         "auto_rôle",
