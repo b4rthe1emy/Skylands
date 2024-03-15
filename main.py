@@ -4,6 +4,7 @@ from rich import print
 import dotenv
 
 TOKEN = dotenv.get_key(dotenv.find_dotenv(), "DISCORD_TOKEN")
+SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
 
 bot = commands.Bot(
     intents=nextcord.Intents.all(),
@@ -26,9 +27,9 @@ bot.add_cog(ModerationCommands(bot))
 bot.add_cog(StatusUpdateCommands(bot))
 bot.add_cog(MemberJoin(bot))
 bot.add_cog(PostUtilities(bot))
-bot.add_cog(PrefixesCommands(bot))
+bot.add_cog(prefixes_commands := PrefixesCommands(bot))
 bot.add_cog(ClearChannelMessagesCommand())
-bot.add_cog(AutoRolesCommands())
+bot.add_cog(AutoRolesCommands(bot))
 bot.add_cog(TestCommands())
 bot.add_all_cog_commands()
 
@@ -115,6 +116,10 @@ async def on_ready():
     )
     print(
         f"[yellow]▐[/yellow][bold on yellow]“[/bold on yellow][yellow]▌ [/yellow][bold yellow]Message Commands:[/bold yellow]\n\n{message_commands}\n"
+    )
+
+    await PrefixesCommands.refresh_everyone(
+        prefixes_commands, bot.get_guild(SKYLANDS_GUILD_ID)
     )
 
 
