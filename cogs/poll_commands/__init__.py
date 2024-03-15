@@ -115,13 +115,12 @@ class PollCommands(commands.Cog):
         #     custom_emojis,
         # )
         embed, view, formated_options, list_options, poll_id = (
-            get_poll_message_embed_and_view(self, title, options)
+            get_poll_message_embed_and_view(
+                self, title, options, self.polls_tracker.get_new_id()
+            )
         )
         try:
-            message = await interaction.channel.send(
-                embed=embed,
-                view=view,
-            )
+            message = await interaction.channel.send(embed=embed, view=view)
         except nextcord.errors.HTTPException:
 
             await interaction.response.send_message(
