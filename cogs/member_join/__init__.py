@@ -4,9 +4,16 @@ from rich import print
 import dotenv
 from utils import time_utils
 
+from captcha.image import ImageCaptcha
+import random
+
 WELCOME_CHANNEL_ID = int(dotenv.get_key(dotenv.find_dotenv(), "WELCOME_CHANNEL_ID"))
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
+NON_VERIFIED_MEMBER_ROLE_ID = int(
+    dotenv.get_key(dotenv.find_dotenv(), "NON_VERIFIED_MEMBER_ROLE_ID")
+)
 MEMBER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MEMBER_ROLE_ID"))
+CAPTCHA_CHANNEL_ID = int(dotenv.get_key(dotenv.find_dotenv(), "CAPTCHA_CHANNEL_ID"))
 
 
 class MemberJoin(commands.Cog):
@@ -45,6 +52,57 @@ class MemberJoin(commands.Cog):
             ),
         )
 
+        text = ""
+        for i in range(5):
+            text += random.choice(
+                "abcdefghijklmnopqrstuvwxyz"  # ABCDEFGHIJKLMNOPQRSTUVWXYZ
+            )
+        image = ImageCaptcha(250, 100).generate(text)
+
+        view = nextcord.ui.View()
+
+        button = nextcord.ui.Button(label="CAPTCHA")
+        modal = nextcord.ui.Modal("CAPTCHA")
+
+        modal.text_input = nextcord.ui.TextInput("CAPTCHA", required=True)
+
+        modal.add_item(modal.text_input)
+
+        async def modal_callback(interaction: nextcord.Interaction):
+            if modal.text_input.value == text:
+                await interaction.message.delete()
+                await interaction.user.remove_roles(
+                    self.skylands_guild.get_role(NON_VERIFIED_MEMBER_ROLE_ID)
+                )
+                await interaction.user.add_roles(
+                    self.skylands_guild.get_role(MEMBER_ROLE_ID)
+                )
+            else:
+                await interaction.response.send_message(
+                    "CAPTCHA incorrect.", ephemeral=True
+                )
+
+        modal.callback = modal_callback
+
+        async def button_callback(interaction: nextcord.Interaction):
+            if interaction.user.id != member.id:
+                await interaction.response.send_message(
+                    f"Y'a que {member.mention} qui peut faire le CAPTCHA.",
+                    ephemeral=True,
+                )
+                return
+            await interaction.response.send_modal(modal)
+
+        button.callback = button_callback
+
+        view.add_item(button)
+
+        await self.bot.get_channel(CAPTCHA_CHANNEL_ID).send(
+            member.mention + " Complète ce CAPTCHA pour avoir accès au serveur.",
+            file=nextcord.File(image, "captcha.png"),
+            view=view,
+        )
+
     @nextcord.slash_command(
         "welcome",
         "Envoie le message de bienvenue",
@@ -68,4 +126,6 @@ class MemberJoin(commands.Cog):
         @self.bot.event
         async def on_member_join(member: nextcord.Member):
             await self.send_welcome_message(member)
-            # await member.add_roles(self.skylands_guild.get_role(MEMBER_ROLE_ID))
+            await member.add_roles(
+                self.skylands_guild.get_role(NON_VERIFIED_MEMBER_ROLE_ID)
+            )
