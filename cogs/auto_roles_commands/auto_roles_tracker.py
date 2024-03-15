@@ -80,7 +80,7 @@ class AutoRolesTracker:
             auto_roles = json.loads(file.read())
         return auto_roles
 
-    async def add_category(
+    async def add_auto_role(
         self, auto_role: AutoRole, interaction: nextcord.Interaction
     ):
         auto_roles = self.auto_roles

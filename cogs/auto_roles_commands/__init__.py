@@ -38,9 +38,8 @@ class AutoRolesCommands(commands.Cog):
             choices={"Bleu-violet": "1", "Gris": "2", "Vert": "3", "Rouge": "4"},
         ),
     ):
-        await self.tracker.add_category(
-            auto_roles_tracker.AutoRole(name, button_color, int(role_id)),
-            interaction,
+        await self.tracker.add_auto_role(
+            auto_roles_tracker.AutoRole(name, button_color, int(role_id)), interaction
         )
         await self.tracker.send_message(interaction, ephemeral=True)
 
