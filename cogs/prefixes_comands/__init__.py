@@ -138,8 +138,9 @@ class PrefixesCommands(commands.Cog):
     async def update_prefix(self, user: nextcord.Member):
         if user.bot:
             return
+        if self.server.owner == user:
+            return
 
-        print("\nUpdating prefix for user", user.global_name or user.name)
         roles = user.roles.copy()
 
         if MUTED_MEMBER_ROLE_ID in [role.id for role in roles]:
@@ -159,51 +160,8 @@ class PrefixesCommands(commands.Cog):
             except KeyError:
                 prefix = None
 
-        print(roles)
         if prefix is not None:
             nick = f"{prefix} | {user.global_name or user.name}"
-            print("Prefix for user", user.global_name or user.name, "is", nick)
             await user.edit(nick=nick)
         else:
             await user.edit(nick=None)
-
-        # for skip_role_id in self.skip_role_ids:
-        #     if skip_role_id in role_ids:
-        #         role_ids.remove(skip_role_id)
-        #         print(
-        #             "Skipping role",
-        #             self.server.get_role(skip_role_id).name,
-        #         )
-
-        # if len(role_ids):
-        #     biggest_role = self.server.get_role(role_ids[-1])
-        #     print("Biggest role is:", biggest_role.name)
-        #     try:
-        #         prefix = ROLE_PREFIXS[biggest_role.id]
-        #         print("Found prefix for role", biggest_role.name, "=>", prefix)
-        #     except KeyError:
-        #         prefix = None
-        #         print(
-        #             "No prefix defined for role:",
-        #             biggest_role.id,
-        #             '"' + biggest_role.name + '"',
-        #             "for user",
-        #             (user.global_name or ("bot " + user.name)),
-        #         )
-        #     print("Prefix for", user.global_name or user.name, "is", prefix)
-
-        #     if prefix == None:
-        #         await user.edit(nick=None)
-        #         print("No prefix for user", user.global_name or user.name)
-        #     else:
-        # nick = f"{prefix} | {user.global_name or user.name}"
-        # print("Prefix for user", user.global_name or user.name, "is", nick)
-        # await user.edit(nick=nick)
-
-        # if MUTED_MEMBER_ROLE_ID in role_ids:
-        #     await user.edit(
-        #         nick=f"{ROLE_PREFIXS[MUTED_MEMBER_ROLE_ID]} | {user.global_name}"
-        #     )
-
-        # else:
-        #     await user.edit(nick=None)
