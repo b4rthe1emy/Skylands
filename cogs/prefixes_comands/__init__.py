@@ -136,6 +136,9 @@ class PrefixesCommands(commands.Cog):
             )
 
     async def update_prefix(self, user: nextcord.Member):
+        if user.bot:
+            return
+
         print("\nUpdating prefix for user", user.global_name or user.name)
         roles = user.roles.copy()
 
