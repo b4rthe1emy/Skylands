@@ -104,11 +104,11 @@ async def on_ready():
         (nextcord.application_command.MessageApplicationCommand,)
     )
     print(
-        """
-[cyan] ______   __  __   __  __   __       ______   __   __   _____   ______      ______   ______   ______  
+        r"""[cyan]
+ ______   __  __   __  __   __       ______   __   __   _____   ______      ______   ______   ______  
 /\  ___\ /\ \/ /  /\ \_\ \ /\ \     /\  __ \ /\ '-.\ \ /\  __-./\  ___\    /\  == \ /\  __ \ /\__  _\ 
-\ \___  \\\ \  _'-.\ \____ \\\ \ \____\ \  __ \\\ \ \-.  \\\ \ \/\ \ \___  \   \ \  __< \ \ \/\ \\\/_/\ \/ 
- \/\_____\\\ \_\ \_\\\/\_____\\\ \_____\\\ \_\ \_\\\ \_\\\\'\_\\\ \____-\/\_____\   \ \_____\\\ \_____\  \ \_\ 
+\ \___  \\ \  _'-.\ \____ \\ \ \____\ \  __ \\ \ \-.  \\ \ \/\ \ \___  \   \ \  __< \ \ \/\ \\/_/\ \/ 
+ \/\_____\\ \_\ \_\\/\_____\\ \_____\\ \_\ \_\\ \_\\'\_\\ \____-\/\_____\   \ \_____\\ \_____\  \ \_\ 
   \/_____/ \/_/\/_/ \/_____/ \/_____/ \/_/\/_/ \/_/ \/_/ \/____/ \/_____/    \/_____/ \/_____/   \/_/[/cyan]
 """,
     )
@@ -122,15 +122,18 @@ async def on_ready():
         f"[yellow]▐[/yellow][bold on yellow]“[/bold on yellow][yellow]▌ [/yellow][bold yellow]Message Commands:[/bold yellow]\n\n{message_commands}\n"
     )
     guild = bot.get_guild(SKYLANDS_GUILD_ID)
-    print("[bold green]>> REFRESHING EVERYONE'S PREFIXES:[/bold green]")
-    print("[italic bright_black]in server " + guild.name + "[/italic bright_black]\n")
 
+    print("[bold blue]>> RESENDING AUTO-ROLE MESSAGE:[bold blue]")
     message = await auto_roles_commands.tracker.send_message(None)
     await bot.get_guild(SKYLANDS_GUILD_ID).get_channel(AUTO_ROLES_CHANNEL_ID).purge(
         check=lambda msg: msg.id != message.id and msg.author == bot.user
     )
+    print("[italic bright_black]Done succefully.[/italic bright_black]\n")
 
+    print("[bold green]>> REFRESHING EVERYONE'S PREFIXES:[/bold green]")
+    print("[italic bright_black]in server " + guild.name + "[/italic bright_black]\n")
     await prefixes_commands.refresh_everyone(guild)
+    print("\n[italic bright_black]Done succefully.[/italic bright_black]")
 
 
 if __name__ == "__main__":

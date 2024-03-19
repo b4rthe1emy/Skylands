@@ -141,6 +141,8 @@ class PrefixesCommands(commands.Cog):
         if self.server.owner == user:
             return
 
+        print(f"Updating {user.global_name or user.name}'s prefix.")
+
         roles = user.roles.copy()
 
         if MUTED_MEMBER_ROLE_ID in [role.id for role in roles]:
