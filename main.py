@@ -125,12 +125,12 @@ async def on_ready():
     print("[bold green]>> REFRESHING EVERYONE'S PREFIXES:[/bold green]")
     print("[italic bright_black]in server " + guild.name + "[/italic bright_black]\n")
 
-    await prefixes_commands.refresh_everyone(guild)
-
     message = await auto_roles_commands.tracker.send_message(None)
     await bot.get_guild(SKYLANDS_GUILD_ID).get_channel(AUTO_ROLES_CHANNEL_ID).purge(
         check=lambda msg: msg.id != message.id and msg.author == bot.user
     )
+
+    await prefixes_commands.refresh_everyone(guild)
 
 
 if __name__ == "__main__":
