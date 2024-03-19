@@ -42,10 +42,21 @@ class AutoRolesButtons(nextcord.ui.View):
                     await interaction.user.remove_roles(
                         interaction.guild.get_role(role_id)
                     )
+                    await interaction.response.send_message(
+                        'Le rôle "' + str(auto_role["name"]) + '" vous a été enlevé.',
+                        ephemeral=True,
+                    )
+
                 else:
                     try:
                         await interaction.user.add_roles(
                             interaction.guild.get_role(role_id)
+                        )
+                        await interaction.response.send_message(
+                            'Le rôle "'
+                            + str(auto_role["name"])
+                            + '" vous a été attribué.',
+                            ephemeral=True,
                         )
                     except AttributeError:
                         await interaction.response.send_message(
@@ -65,7 +76,11 @@ class AutoRolesButtons(nextcord.ui.View):
                 ),
                 style=style,
             )
-            button.callback = lambda interaction: callback(interaction, auto_role)
+
+            async def btn_callback(interaction: nextcord.Interaction):
+                await callback(interaction, auto_role)
+
+            button.callback = btn_callback
             self.add_item(button)
 
 
