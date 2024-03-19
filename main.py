@@ -5,6 +5,10 @@ import dotenv
 
 TOKEN = dotenv.get_key(dotenv.find_dotenv(), "DISCORD_TOKEN")
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
+AUTO_ROLES_CHANNEL_ID = int(
+    dotenv.get_key(dotenv.find_dotenv(), "AUTO_ROLES_CHANNEL_ID")
+)
+
 
 bot = commands.Bot(
     intents=nextcord.Intents.all(),
@@ -29,7 +33,7 @@ bot.add_cog(MemberJoin(bot))
 bot.add_cog(PostUtilities(bot))
 bot.add_cog(prefixes_commands := PrefixesCommands(bot))
 bot.add_cog(ClearChannelMessagesCommand())
-bot.add_cog(AutoRolesCommands(bot))
+bot.add_cog(auto_roles_commands := AutoRolesCommands(bot))
 bot.add_cog(TestCommands())
 bot.add_all_cog_commands()
 
@@ -117,9 +121,15 @@ async def on_ready():
     print(
         f"[yellow]▐[/yellow][bold on yellow]“[/bold on yellow][yellow]▌ [/yellow][bold yellow]Message Commands:[/bold yellow]\n\n{message_commands}\n"
     )
+    guild = bot.get_guild(SKYLANDS_GUILD_ID)
+    print("[bold green]>> REFRESHING EVERYONE'S PREFIXES:[/bold green]")
+    print("[italic bright_black]in server " + guild.name + "[/italic bright_black]\n")
 
-    await PrefixesCommands.refresh_everyone(
-        prefixes_commands, bot.get_guild(SKYLANDS_GUILD_ID)
+    await prefixes_commands.refresh_everyone(guild)
+
+    message = await auto_roles_commands.tracker.send_message(None)
+    await bot.get_guild(SKYLANDS_GUILD_ID).get_channel(AUTO_ROLES_CHANNEL_ID).purge(
+        check=lambda msg: msg.id != message.id and msg.author == bot.user
     )
 
 

@@ -92,7 +92,7 @@ class ModerationCommands(commands.Cog):
         await member.remove_roles(member_role)
         await member.add_roles(muted_role)
 
-        await member.edit(nick=("[MUET] " + member.global_name))
+        # await member.edit(nick=("[MUET] " + member.global_name))
 
         await interaction.response.send_message(
             f"L'utilisateur {member.mention} ne peux maintenant plus parler.",
@@ -123,7 +123,7 @@ class ModerationCommands(commands.Cog):
         await member.remove_roles(muted_role)
         await member.add_roles(member_role)
 
-        await member.edit(nick=None)
+        # await member.edit(nick=None)
 
         await interaction.response.send_message(
             f"L'utilisateur {member.mention} peux maintenant parler.",

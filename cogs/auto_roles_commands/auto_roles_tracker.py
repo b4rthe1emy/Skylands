@@ -115,10 +115,11 @@ class AutoRolesTracker:
         view = AutoRolesButtons(self.auto_roles)
 
         if ephemeral:
-            await interaction.response.send_message(
-                "Voici un apercu des auto-rôles. Utilise </auto_rôle renvoyer_message:1216344424670298283> pour renvoyer le message.",
-                embed=embed,
-                ephemeral=True,
-            )
+            if interaction is not None:
+                await interaction.response.send_message(
+                    "Voici un apercu des auto-rôles. Utilise </auto_rôle renvoyer_message:1216344424670298283> pour renvoyer le message.",
+                    embed=embed,
+                    ephemeral=True,
+                )
         else:
-            await channel.send(embed=embed, view=view)
+            return await channel.send(embed=embed, view=view)
