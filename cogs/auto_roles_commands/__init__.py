@@ -17,7 +17,7 @@ class AutoRolesCommands(commands.Cog):
     async def auto_rôle(self, interaction: nextcord.Interaction):
         pass
 
-    @auto_rôle.subcommand("suprimer", "Supprime l'auto-rôle qui a ce nom")
+    @auto_rôle.subcommand("supprimer", "Supprime l'auto-rôle qui a ce nom")
     async def delete(
         self,
         interaction: nextcord.Interaction,
