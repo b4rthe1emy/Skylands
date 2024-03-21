@@ -17,6 +17,17 @@ class AutoRolesCommands(commands.Cog):
     async def auto_rôle(self, interaction: nextcord.Interaction):
         pass
 
+    @auto_rôle.subcommand("suprimer", "Supprime l'auto-rôle qui a ce nom")
+    async def delete(
+        self,
+        interaction: nextcord.Interaction,
+        auto_role_name: str = nextcord.SlashOption(
+            "nom_de_l_auto_role",
+            "Le nom de l'auto-rôle à supprimer",
+        ),
+    ):
+        await self.tracker.delete_auto_role(auto_role_name, interaction)
+
     @auto_rôle.subcommand(
         "créer",
         "Crée un auto-rôle.",
@@ -38,10 +49,10 @@ class AutoRolesCommands(commands.Cog):
             choices={"Bleu-violet": "1", "Gris": "2", "Vert": "3", "Rouge": "4"},
         ),
     ):
-        await self.tracker.add_auto_role(
+        if not await self.tracker.add_auto_role(
             auto_roles_tracker.AutoRole(name, button_color, int(role_id)), interaction
-        )
-        await self.tracker.send_message(interaction, ephemeral=True)
+        ):
+            await self.tracker.send_message(interaction, ephemeral=True)
 
     @auto_rôle.subcommand(
         "renvoyer_message",

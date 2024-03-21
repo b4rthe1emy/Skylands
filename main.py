@@ -23,7 +23,6 @@ from cogs.posts_utilities import PostUtilities
 from cogs.prefixes_comands import PrefixesCommands
 from cogs.clear_channel_messages_command import ClearChannelMessagesCommand
 from cogs.auto_roles_commands import AutoRolesCommands
-from cogs.test import TestCommands
 
 bot.add_cog(PollCommands())
 bot.add_cog(MiscellaneousCommands())
@@ -34,7 +33,6 @@ bot.add_cog(PostUtilities(bot))
 bot.add_cog(prefixes_commands := PrefixesCommands(bot))
 bot.add_cog(ClearChannelMessagesCommand())
 bot.add_cog(auto_roles_commands := AutoRolesCommands(bot))
-bot.add_cog(TestCommands())
 bot.add_all_cog_commands()
 
 

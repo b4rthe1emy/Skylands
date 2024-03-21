@@ -95,9 +95,38 @@ class AutoRolesTracker:
             auto_roles = json.loads(file.read())
         return auto_roles
 
+    async def delete_auto_role(self, name: str, interaction: nextcord.Interaction):
+        auto_role_names = [ar["name"] for ar in self.auto_roles]
+        try:
+            auto_role_index = auto_role_names.index(name)
+        except ValueError:
+            await interaction.response.send_message(
+                "Il n'y a pas d'auto-rôle appelé \""
+                + name
+                + '". Voici tous les auto-rôles possibles :\n- '
+                + ("\n- ".join([ar["name"] for ar in self.auto_roles]) or "*aucun*"),
+                ephemeral=True,
+            )
+            return
+        auto_roles = self.auto_roles
+        auto_roles.pop(auto_role_index)
+
+        with open(self.auto_roles_file, mode="w") as file:
+            file.write(json.dumps(auto_roles))
+
+        await interaction.response.send_message("Auto-rôle supprimé.", ephemeral=True)
+
     async def add_auto_role(
         self, auto_role: AutoRole, interaction: nextcord.Interaction
     ):
+        auto_role_names = [ar["name"] for ar in self.auto_roles]
+        if auto_role.name in auto_role_names:
+            await interaction.response.send_message(
+                'Il y a déjà un auto-rôle appelé "' + auto_role.name + '".',
+                ephemeral=True,
+            )
+            return True
+
         auto_roles = self.auto_roles
         auto_roles.append(auto_role.to_dict)
 
@@ -117,7 +146,7 @@ class AutoRolesTracker:
 
         embed.add_field(
             name="Choisissez un rôle en cliquant sur les boutons ci-dessous pour recevoir des **notifications** de :",
-            value=", ".join([n["name"] for n in self.auto_roles]),
+            value=(", ".join([n["name"] for n in self.auto_roles]) or "rien..."),
             inline=False,
         )
 
@@ -137,4 +166,8 @@ class AutoRolesTracker:
                     ephemeral=True,
                 )
         else:
-            return await channel.send(embed=embed, view=view)
+            return await channel.send(
+                embed=embed,
+                view=view,
+                flags=nextcord.MessageFlags(suppress_notifications=True),
+            )
