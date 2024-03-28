@@ -5,7 +5,6 @@ import dotenv
 
 OWNER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "OWNER_ROLE_ID"))
 ADMIN_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "ADMIN_ROLE_ID"))
-ASSISTANT_GERANT = int(dotenv.get_key(dotenv.find_dotenv(), "ASSISTANT_GERANT"))
 MODO_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MODO_ROLE_ID"))
 DEV_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "DEV_ROLE_ID"))
 WEB_DEV_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "WEB_DEV_ROLE_ID"))
