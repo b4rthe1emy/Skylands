@@ -141,8 +141,6 @@ class PrefixesCommands(commands.Cog):
         if self.server.owner == user:
             return
 
-        print(f"Updating {user.global_name or user.name}'s prefix.")
-
         roles = user.roles.copy()
 
         if MUTED_MEMBER_ROLE_ID in [role.id for role in roles]:
@@ -163,6 +161,9 @@ class PrefixesCommands(commands.Cog):
                 prefix = None
 
         if prefix is not None:
+            print(
+                f"Updating [on cornflower_blue] @{user.global_name or user.name} [/on cornflower_blue]'s prefix."
+            )
             nick = f"{prefix} | {user.global_name or user.name}"
             await user.edit(nick=nick)
         else:
