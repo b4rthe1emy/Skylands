@@ -4,8 +4,8 @@ from rich import print
 import dotenv
 
 OWNER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "OWNER_ROLE_ID"))
-SYS_STAFF_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SYS_STAFF_ROLE_ID"))
 ADMIN_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "ADMIN_ROLE_ID"))
+ASSISTANT_GERANT = int(dotenv.get_key(dotenv.find_dotenv(), "ASSISTANT_GERANT"))
 MODO_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MODO_ROLE_ID"))
 DEV_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "DEV_ROLE_ID"))
 WEB_DEV_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "WEB_DEV_ROLE_ID"))
@@ -15,22 +15,14 @@ GUIDE_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "GUIDE_ROLE_ID"))
 DISCORD_STAFF_ROLE_ID = int(
     dotenv.get_key(dotenv.find_dotenv(), "DISCORD_STAFF_ROLE_ID")
 )
-STAFF_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "STAFF_ROLE_ID"))
 YOUTUBER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "YOUTUBER_ROLE_ID"))
 STREAMER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "STREAMER_ROLE_ID"))
-BOOSTER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "BOOSTER_ROLE_ID"))
-FRIEND_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "FRIEND_ROLE_ID"))
 MEMBER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MEMBER_ROLE_ID"))
 MUTED_MEMBER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MUTED_MEMBER_ROLE_ID"))
-NON_VERIFIED_MEMBER_ROLE_ID = int(
-    dotenv.get_key(dotenv.find_dotenv(), "NON_VERIFIED_MEMBER_ROLE_ID")
-)
-
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
 
 ROLE_PREFIXS: dict[int, str | None] = {
     OWNER_ROLE_ID: "Gérant",
-    SYS_STAFF_ROLE_ID: None,
     ADMIN_ROLE_ID: "Admin",
     MODO_ROLE_ID: "Modo",
     DEV_ROLE_ID: "Dev",
@@ -39,14 +31,9 @@ ROLE_PREFIXS: dict[int, str | None] = {
     ANIMATOR_ROLE_ID: "Animateur",
     GUIDE_ROLE_ID: "Guide",
     DISCORD_STAFF_ROLE_ID: "Ed",
-    STAFF_ROLE_ID: None,
     YOUTUBER_ROLE_ID: "YT",
     STREAMER_ROLE_ID: "Streameur",
-    BOOSTER_ROLE_ID: None,
-    FRIEND_ROLE_ID: None,
-    MEMBER_ROLE_ID: None,
     MUTED_MEMBER_ROLE_ID: "MUET",
-    NON_VERIFIED_MEMBER_ROLE_ID: None,
 }
 
 
