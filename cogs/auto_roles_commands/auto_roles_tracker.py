@@ -28,60 +28,66 @@ class AutoRole:
 
 
 class AutoRolesButtons(nextcord.ui.View):
-    def __init__(self, auto_roles: list[dict]) -> None:
-        super().__init__(timeout=None, auto_defer=False)
-        self.auto_roles: list[dict] = auto_roles
+    async def add_role(
+        self, interaction: nextcord.Interaction, role_id: int, role_name: str
+    ):
+        has_role = bool(interaction.user.get_role(role_id))
 
-        for auto_role in self.auto_roles:
-
-            async def callback(interaction: nextcord.Interaction, auto_role):
-                role_id = auto_role["role_id"]
-                has_role = bool(interaction.user.get_role(role_id))
-
-                if has_role:
-                    await interaction.user.remove_roles(
-                        interaction.guild.get_role(role_id)
-                    )
-                    await interaction.response.send_message(
-                        'Le rôle "' + str(auto_role["name"]) + '" vous a été enlevé.',
-                        ephemeral=True,
-                    )
-
-                else:
-                    try:
-                        await interaction.user.add_roles(
-                            interaction.guild.get_role(role_id)
-                        )
-                        await interaction.response.send_message(
-                            'Le rôle "'
-                            + str(auto_role["name"])
-                            + '" vous a été attribué.',
-                            ephemeral=True,
-                        )
-                    except AttributeError:
-                        await interaction.response.send_message(
-                            "Le rôle n'a pas pu être attribué. Contactez les administrateurs et développeurs dans le salon <#1201270746983440385>.",
-                            ephemeral=True,
-                        )
-
-            style = int(auto_role["button_color"])
-
-            button = nextcord.ui.Button(
-                label=auto_role["name"],
-                custom_id=(
-                    "auto_role_button_"
-                    + str(auto_role["name"])
-                    + "_"
-                    + str(auto_role["role_id"])
+        if has_role:
+            await interaction.user.remove_roles(interaction.guild.get_role(role_id))
+            await interaction.response.send_message(
+                embed=nextcord.Embed(
+                    title='Le rôle "' + str(role_name) + '" vous a été enlevé.'
                 ),
-                style=style,
+                ephemeral=True,
             )
 
-            async def btn_callback(interaction: nextcord.Interaction):
-                await callback(interaction, auto_role)
+        else:
+            try:
+                await interaction.user.add_roles(interaction.guild.get_role(role_id))
+                await interaction.response.send_message(
+                    embed=nextcord.Embed(
+                        title='Le rôle "' + str(role_name) + '" vous a été attribué.'
+                    ),
+                    ephemeral=True,
+                )
+            except AttributeError:
+                await interaction.response.send_message(
+                    embed=nextcord.Embed(
+                        title="Erreur",
+                        description=f"Le rôle n'a pas pu être attribué. Contactez les administrateurs et développeurs dans le salon <#1201270746983440385>.\n`ERR_INVALID_ROLE_ID_{role_id}`",
+                    ),
+                    ephemeral=True,
+                )
 
-            button.callback = btn_callback
+    def get_callback(self, label: str, role_id: int):
+        async def buttoncallback(interaction: nextcord.Interaction):
+            await self.add_role(interaction, role_id, label)
+
+        return buttoncallback
+
+    def __init__(self, auto_roles: list[dict]) -> None:
+        super().__init__(timeout=None, auto_defer=False)
+        self.auto_roles: list[dict] = auto_roles.copy()
+
+        buttons = self.auto_roles
+
+        for btn_id in range(len(buttons)):
+            button = nextcord.ui.Button(
+                style=buttons[btn_id]["button_color"],
+                label=buttons[btn_id]["name"],
+                # emoji=buttons[btn_id]["emoji"],
+            )
+            button.callback = self.get_callback(
+                button.label, buttons[btn_id]["role_id"]
+            )
             self.add_item(button)
+
+        # button = nextcord.ui.Button(
+        #     style=btn_style.gray, label=buttons[1]["label"], emoji=buttons[1]["emoji"]
+        # )
+        # button.callback = self.get_callback(button.label, buttons[1]["role_id"])
+        # self.add_item(button)
 
 
 class AutoRolesTracker:
