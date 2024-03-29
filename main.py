@@ -23,6 +23,7 @@ from cogs.posts_utilities import PostUtilities
 from cogs.prefixes_comands import PrefixesCommands
 from cogs.clear_channel_messages_command import ClearChannelMessagesCommand
 from cogs.auto_roles_commands import AutoRolesCommands
+from cogs.recruitment_form import RecruitmentForm
 
 bot.add_cog(PollCommands())
 bot.add_cog(MiscellaneousCommands())
@@ -132,6 +133,17 @@ async def on_ready():
     print("[italic bright_black]in server " + guild.name + "[/italic bright_black]\n")
     await prefixes_commands.refresh_everyone(guild)
     print("\n[italic bright_black]Done succefully.[/italic bright_black]")
+    btn = nextcord.ui.Button(label="test")
+
+    async def btn_callback(interaction: nextcord.Interaction):
+        await interaction.response.send_modal(RecruitmentForm())
+
+    btn.callback = btn_callback
+    view = nextcord.ui.View()
+    view.add_item(btn)
+    await guild.get_channel(AUTO_ROLES_CHANNEL_ID).send(
+        "# APPUYEZ PAS SVP\n- barth", view=view
+    )
 
 
 if __name__ == "__main__":
