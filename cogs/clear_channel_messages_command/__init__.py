@@ -8,6 +8,7 @@ class ClearChannelMessagesCommand(commands.Cog):
         "supprimer_les_messages",
         "ATTENTION: SUPPRIME TOUS LES MESSAGES DU SALON. À UTILISER UNIQUEMENT SI TU SAIS CE QUE TU FAIS!!!",
         default_member_permissions=nextcord.Permissions(administrator=True),
+        dm_permission=False,
     )
     async def clear_salon(
         self,
