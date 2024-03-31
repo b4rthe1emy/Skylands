@@ -4,6 +4,9 @@ polls.json
 # Saved auto-roles
 autoRoles.json
 
+# Tickets
+tickets.json
+
 # Tests
 cogs/test/*
 
