@@ -37,8 +37,8 @@ class TicketsCommands(commands.Cog):
     @nextcord.slash_command(
         "ticket",
         "Groupe de commandes réservées à la gestion des tickets",
-        guild_ids=[SKYLANDS_GUILD_ID],
         dm_permission=False,
+        default_member_permissions=nextcord.Permissions(administrator=True),
     )
     async def tickets(self, interaction: nextcord.Interaction):
         pass
@@ -76,7 +76,7 @@ class TicketsCommands(commands.Cog):
     @nextcord.slash_command(
         "envoyer_message_tickets",
         "Envoie le message avec le bouton pour créer un ticket",
-        guild_ids=[SKYLANDS_GUILD_ID],
+        dm_permission=False,
         default_member_permissions=nextcord.Permissions(administrator=True),
     )
     async def send_control_message(self, interaction: nextcord.Interaction):
