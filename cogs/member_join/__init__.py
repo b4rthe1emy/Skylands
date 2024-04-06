@@ -14,6 +14,9 @@ NON_VERIFIED_MEMBER_ROLE_ID = int(
 )
 MEMBER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MEMBER_ROLE_ID"))
 CAPTCHA_CHANNEL_ID = int(dotenv.get_key(dotenv.find_dotenv(), "CAPTCHA_CHANNEL_ID"))
+WELCOME_IMAGE_FILE_PATH = dotenv.get_key(
+    dotenv.find_dotenv(), "WELCOME_IMAGE_FILE_PATH"
+)
 
 
 class MemberJoin(commands.Cog):
@@ -44,7 +47,7 @@ class MemberJoin(commands.Cog):
             embed=embed,
             file=nextcord.File(
                 open(
-                    "/home/barth/Documents/GitHub/Skylands/assets/skylands_welcome.png",
+                    WELCOME_IMAGE_FILE_PATH,
                     "rb",
                 ),
                 "image_welcome.png",
