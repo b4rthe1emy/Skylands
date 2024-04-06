@@ -140,7 +140,10 @@ class AutoRolesTracker:
             file.write(json.dumps(auto_roles))
 
     async def send_message(
-        self, interaction: nextcord.Interaction, ephemeral: bool = False
+        self,
+        interaction: nextcord.Interaction,
+        ephemeral: bool = False,
+        edit_message: nextcord.Message = None,
     ):
         embed = nextcord.Embed(
             title="Notifications", color=0x3498DB, url="https://skylandsmc.fr/"
@@ -172,8 +175,14 @@ class AutoRolesTracker:
                     ephemeral=True,
                 )
         else:
-            return await channel.send(
-                embed=embed,
-                view=view,
-                flags=nextcord.MessageFlags(suppress_notifications=True),
-            )
+            if edit_message:
+                return await edit_message.edit(
+                    embed=embed,
+                    view=view,
+                )
+            else:
+                return await channel.send(
+                    embed=embed,
+                    view=view,
+                    flags=nextcord.MessageFlags(suppress_notifications=True),
+                )
