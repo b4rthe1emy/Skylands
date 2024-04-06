@@ -126,10 +126,16 @@ async def on_ready():
     guild = bot.get_guild(SKYLANDS_GUILD_ID)
 
     print("[bold blue]>> RESENDING AUTO-ROLE MESSAGE:[bold blue]")
-    message = await auto_roles_commands.tracker.send_message(None)
-    await bot.get_guild(SKYLANDS_GUILD_ID).get_channel(AUTO_ROLES_CHANNEL_ID).purge(
-        check=lambda msg: msg.id != message.id and msg.author == bot.user
-    )
+
+    last_message = [
+        msg
+        async for msg in bot.get_guild(SKYLANDS_GUILD_ID)
+        .get_channel(AUTO_ROLES_CHANNEL_ID)
+        .history()
+        if msg.author == bot.user
+    ][0]
+    await auto_roles_commands.tracker.send_message(None, edit_message=last_message)
+
     print("[italic bright_black]Done succefully.[/italic bright_black]\n")
 
     print("[bold green]>> REFRESHING EVERYONE'S PREFIXES:[/bold green]")
