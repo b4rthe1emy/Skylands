@@ -43,6 +43,10 @@ class TicketsCommands(commands.Cog):
     async def tickets(self, interaction: nextcord.Interaction):
         pass
 
+    @property
+    def default_permissions(self):
+        return nextcord.PermissionOverwrite(view_channel=False)
+
     async def create_ticket(self, interaction: nextcord.Interaction):
         author = interaction.user
         with open("tickets.json", "rt") as ticket_counter_file:
@@ -54,15 +58,26 @@ class TicketsCommands(commands.Cog):
             f"ticket-{str(ticket_id)}-{author.global_name}",
             category=self.ticket_category,
         )
-
-        tickets.append({"channel_id": ticket_channel.id, "closed": False})
+        new_ticket = {
+            "channel_id": ticket_channel.id,
+            "owner_id": author.id,
+        }
+        tickets.append(new_ticket)
 
         with open("tickets.json", "wt") as ticket_counter_file:
             ticket_counter_file.write(json.dumps(tickets))
 
         await ticket_channel.set_permissions(
             self.server.get_role(MEMBER_ROLE_ID),
-            overwrite=nextcord.PermissionOverwrite(view_channel=False),
+            overwrite=self.default_permissions,
+        )
+
+        owner_perm = nextcord.PermissionOverwrite()
+        owner_perm.view_channel = True
+
+        await ticket_channel.set_permissions(
+            interaction.user,
+            overwrite=owner_perm,
         )
 
         await interaction.response.send_message(
@@ -102,13 +117,6 @@ class TicketsCommands(commands.Cog):
             )
             return True
 
-        if member.bot:
-            await interaction.response.send_message(
-                "Tu ne peux pas ajouter de bot dans un ticket.",
-                ephemeral=True,
-            )
-            return True
-
         return False
 
     async def add_or_remove_member(
@@ -117,6 +125,13 @@ class TicketsCommands(commands.Cog):
         remove = not add
         ticket = interaction.channel
         if await self.handle_ticket_error(interaction, member):
+            return
+
+        if member.bot:
+            await interaction.response.send_message(
+                "Tu ne peux pas ajouter/enlever de bot dans un ticket.",
+                ephemeral=True,
+            )
             return
 
         await interaction.response.defer()
@@ -178,3 +193,52 @@ class TicketsCommands(commands.Cog):
         ),
     ):
         await self.add_or_remove_member(False, interaction, member)
+
+    @tickets.subcommand("fermer", "Ferme le ticket")
+    async def close_ticket_command(
+        self,
+        interaction: nextcord.Interaction,
+        reason: str = nextcord.SlashOption(
+            "raison", "Pourquoi veux-tu fermer ce ticket ?", required=True
+        ),
+    ):
+        await interaction.response.send_message(
+            "Fermeture du ticket en cours...", ephemeral=True
+        )
+
+        with open("tickets.json", "rt") as tickets_file:
+            tickets: list = json.loads(tickets_file.read())
+
+        ticket_ids = [ticket["channel_id"] for ticket in tickets]
+        ticket_index = ticket_ids.index(interaction.channel_id)
+
+        tickets.pop(ticket_index)
+
+        with open("tickets.json", "wt") as tickets_file:
+            tickets_file.write(json.dumps(tickets))
+
+        ticket_channel: nextcord.TextChannel = self.server.get_channel(
+            interaction.channel_id
+        )
+        for user in ticket_channel.members:
+            if user.bot:
+                continue
+            await user.send(
+                embed=nextcord.Embed(
+                    title="Ticket fermé",
+                )
+                .add_field(
+                    name="Fermé par", value=interaction.user.mention, inline=False
+                )
+                .add_field(name="Raison :", value="> " + reason, inline=False),
+            )
+
+        # new_perms = self.default_permissions
+        # new_perms.send_messages = False
+
+        # await ticket_channel.set_permissions(
+        #     self.server.get_role(MEMBER_ROLE_ID),
+        #     overwrite=new_perms,
+        # )
+
+        await ticket_channel.delete()
