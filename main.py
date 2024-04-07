@@ -147,25 +147,24 @@ async def on_ready():
     await tickets_commands.send_control_message(None, edit=True)
     print("[italic green]Done succefully.[/italic green]\n")
 
-    print("[bold blue]>> SENDING RECRUITEMENT FORM MESSAGE[bold blue]")
+    # print("[bold blue]>> SENDING RECRUITEMENT FORM MESSAGE[bold blue]")
 
-    btn = nextcord.ui.Button(label="Formulaire", emoji="📝")
+    # btn = nextcord.ui.Button(label="Formulaire", emoji="📝")
 
-    async def btn_callback(interaction: nextcord.Interaction):
-        await interaction.response.send_modal(RecruitmentForm())
+    # async def btn_callback(interaction: nextcord.Interaction):
+    #     await interaction.response.send_modal(RecruitmentForm())
 
-    btn.callback = btn_callback
-    view = nextcord.ui.View()
-    view.add_item(btn)
-    await guild.get_channel(AUTO_ROLES_CHANNEL_ID).send(
-        embed=nextcord.Embed(
-            title="Formulaire recrutement",
-            description="Cliquez sur le bouton pour remplir le formulaire.",
-        ),
-        view=view,
-    )
-    print("[italic green]Done succefully.[/italic green]\n")
-    # print("[italic bright_black]Disabled.[/italic bright_black]\n")
+    # btn.callback = btn_callback
+    # view = nextcord.ui.View()
+    # view.add_item(btn)
+    # await guild.get_channel(AUTO_ROLES_CHANNEL_ID).send(
+    #     embed=nextcord.Embed(
+    #         title="Formulaire recrutement",
+    #         description="Cliquez sur le bouton pour remplir le formulaire.",
+    #     ),
+    #     view=view,
+    # )
+    # print("[italic green]Done succefully.[/italic green]\n")
 
 
 if __name__ == "__main__":
