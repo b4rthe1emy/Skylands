@@ -3,9 +3,11 @@ from nextcord.ext import commands
 from rich import print
 import dotenv
 from utils import time_utils
+import cogs.member_join.image_generator as img_gen
 
 from captcha.image import ImageCaptcha
 import random
+
 
 WELCOME_CHANNEL_ID = int(dotenv.get_key(dotenv.find_dotenv(), "WELCOME_CHANNEL_ID"))
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
@@ -42,6 +44,8 @@ class MemberJoin(commands.Cog):
             value="Tu peux lier ton compte Minecraft avec ton compte Discord en tapant la commande `/link` en jeu.",
         )
 
+        await img_gen.generate_welcome_image(member)
+
         await self.welcome_channel.send(
             member.mention,
             embed=embed,
@@ -50,8 +54,7 @@ class MemberJoin(commands.Cog):
                     WELCOME_IMAGE_FILE_PATH,
                     "rb",
                 ),
-                "image_welcome.png",
-                description="L'image de bienvenue accompagnée du message.",
+                "image.png",
             ),
         )
 

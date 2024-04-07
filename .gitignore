@@ -1,14 +1,15 @@
-# Saved polls
+# jsons
 polls.json
-
-# Saved auto-roles
 autoRoles.json
-
-# Tickets
 tickets.json
+
+# Welcome image generation
+image.png
 
 # Tests
 cogs/test/*
+
+###########################
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
