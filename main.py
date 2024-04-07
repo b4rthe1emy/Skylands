@@ -24,7 +24,7 @@ from cogs.prefixes_comands import PrefixesCommands
 from cogs.clear_channel_messages_command import ClearChannelMessagesCommand
 from cogs.auto_roles_commands import AutoRolesCommands
 
-# from cogs.recruitment_form import RecruitmentForm
+from cogs.recruitment_form import RecruitmentForm
 from cogs.tickets_commands import TicketsCommands
 
 bot.add_cog(PollCommands())
@@ -36,7 +36,7 @@ bot.add_cog(PostUtilities(bot))
 bot.add_cog(prefixes_commands := PrefixesCommands(bot))
 bot.add_cog(ClearChannelMessagesCommand())
 bot.add_cog(auto_roles_commands := AutoRolesCommands(bot))
-bot.add_cog(TicketsCommands(bot))
+bot.add_cog(tickets_commands := TicketsCommands(bot))
 bot.add_all_cog_commands()
 
 
@@ -125,7 +125,7 @@ async def on_ready():
     )
     guild = bot.get_guild(SKYLANDS_GUILD_ID)
 
-    print("[bold blue]>> RESENDING AUTO-ROLE MESSAGE:[bold blue]")
+    print("[bold blue]>> UPDATING AUTO-ROLE MESSAGE[bold blue]")
 
     last_message = [
         msg
@@ -136,22 +136,36 @@ async def on_ready():
     ][0]
     await auto_roles_commands.tracker.send_message(None, edit_message=last_message)
 
-    print("[italic bright_black]Done succefully.[/italic bright_black]\n")
+    print("[italic green]Done succefully.[/italic green]\n")
 
-    print("[bold green]>> REFRESHING EVERYONE'S PREFIXES:[/bold green]")
-    print("[italic bright_black]in server " + guild.name + "[/italic bright_black]\n")
+    print("[bold blue]>> REFRESHING EVERYONE'S PREFIXES[/bold blue]")
+    print("[italic blue]in server " + guild.name + "[/italic blue]\n")
     await prefixes_commands.refresh_everyone(guild)
-    print("\n[italic bright_black]Done succefully.[/italic bright_black]")
+    print("\n[italic green]Done succefully.[/italic green]\n")
 
-    # btn = nextcord.ui.Button(label="test")
-    # async def btn_callback(interaction: nextcord.Interaction):
-    #     await interaction.response.send_modal(RecruitmentForm())
-    # btn.callback = btn_callback
-    # view = nextcord.ui.View()
-    # view.add_item(btn)
-    # await guild.get_channel(AUTO_ROLES_CHANNEL_ID).send(
-    #     "# APPUYEZ PAS SVP\n- barth", view=view
-    # )
+    print("[bold blue]>> UPDATING TICKETS CONTROL MESSAGE[/bold blue]")
+    await tickets_commands.send_control_message(None, edit=True)
+    print("[italic green]Done succefully.[/italic green]\n")
+
+    print("[bold blue]>> SENDING RECRUITEMENT FORM MESSAGE[bold blue]")
+
+    btn = nextcord.ui.Button(label="Formulaire", emoji="📝")
+
+    async def btn_callback(interaction: nextcord.Interaction):
+        await interaction.response.send_modal(RecruitmentForm())
+
+    btn.callback = btn_callback
+    view = nextcord.ui.View()
+    view.add_item(btn)
+    await guild.get_channel(AUTO_ROLES_CHANNEL_ID).send(
+        embed=nextcord.Embed(
+            title="Formulaire recrutement",
+            description="Cliquez sur le bouton pour remplir le formulaire.",
+        ),
+        view=view,
+    )
+    print("[italic green]Done succefully.[/italic green]\n")
+    # print("[italic bright_black]Disabled.[/italic bright_black]\n")
 
 
 if __name__ == "__main__":
