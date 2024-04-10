@@ -9,9 +9,15 @@ AUTO_ROLES_CHANNEL_ID = int(
     dotenv.get_key(dotenv.find_dotenv(), "AUTO_ROLES_CHANNEL_ID")
 )
 
+bot_activity = nextcord.Activity(
+    name="Skylands",
+    type=nextcord.ActivityType.playing,
+)
+
 
 bot = commands.Bot(
     intents=nextcord.Intents.all(),
+    activity=bot_activity,
 )
 
 from cogs.poll_commands import PollCommands
