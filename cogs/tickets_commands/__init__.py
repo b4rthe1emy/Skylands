@@ -100,7 +100,18 @@ class TicketsCommands(commands.Cog):
         dm_permission=False,
         default_member_permissions=nextcord.Permissions(administrator=True),
     )
-    async def send_control_message(self, interaction: nextcord.Interaction, edit=False):
+    async def send_control_message(
+        self,
+        interaction: nextcord.Interaction,
+        edit=nextcord.SlashOption(
+            "modifier_existant",
+            "Si Oui, le dernier message envoyé par le bot va être "
+            "modifié, sinon, le message va être renvoyé",
+            default="Non",
+            choices={"Oui": "Oui", "Non": "Non"},
+        ),
+    ):
+        edit = True if edit == "Oui" or edit == True else False
         view = nextcord.ui.View(timeout=None)
         btn = nextcord.ui.Button(label="Créer un ticket", emoji="🎟️")
 
@@ -109,6 +120,7 @@ class TicketsCommands(commands.Cog):
 
         btn.callback = callback
         view.add_item(btn)
+
         if edit:
             messages = (
                 await self.bot.get_channel(TICKETS_CHANNEL_ID).history().flatten()
@@ -117,15 +129,59 @@ class TicketsCommands(commands.Cog):
             try:
                 last_bot_msg: nextcord.Message = messages[0]
             except IndexError:
-                await self.bot.get_channel(TICKETS_CHANNEL_ID).send(view=view)
-                return
+                action = self.bot.get_channel(TICKETS_CHANNEL_ID).send
+            else:
+                action = last_bot_msg.edit
 
-            await last_bot_msg.edit(view=view)
-            return
         else:
-            await self.bot.get_channel(TICKETS_CHANNEL_ID).send(view=view)
+            action = self.bot.get_channel(TICKETS_CHANNEL_ID).send
 
-        await interaction.response.send_message("✅ Message renvoyé.", ephemeral=True)
+        await action(
+            embeds=[
+                nextcord.Embed(
+                    title="Règles des tickets",
+                    description="Voici les règles à lire avant de créer un ticket :",
+                )
+                .add_field(
+                    name="Règle 1",
+                    value="Merci de créer un ticket uniquement pour les raison "
+                    "listées dans le menu déroulant en dessous de ce message",
+                    inline=False,
+                )
+                .add_field(
+                    name="Règle 2",
+                    value="Merci de ne pas ouvrir un ticket pour un recrutement.",
+                    inline=False,
+                )
+                .add_field(
+                    name="Règle 3",
+                    value="Merci de ne pas créer un ticket uniquement dans le but "
+                    "de déranger le staff.",
+                    inline=False,
+                )
+                .add_field(
+                    name="Règle 4",
+                    value="Merci de ne pas ouvrir un ticket dans le seul but de "
+                    "poser une question.",
+                    inline=False,
+                ),
+                nextcord.Embed(
+                    title="Qu'est-ce qu'un ticket ?",
+                    description="> Un ticket te permet d'échanger avec le staff "
+                    "dans un salon privé. Si tu as un problème, tu peux ouvrir "
+                    "un ticket pour qu'on t'aide !",
+                ).add_field(
+                    name="Comment créer un ticket ?",
+                    value="> Choisis parmi les options du menu déroulant situé "
+                    "en dessous de ce message pour créer ton ticket !",
+                ),
+            ],
+            view=view,
+        )
+        if interaction is not None:
+            await interaction.response.send_message(
+                "✅ Message renvoyé.", ephemeral=True
+            )
 
     async def handle_ticket_error(self, interaction: nextcord.Interaction) -> bool:
         if not self.is_ticket(interaction.channel):
