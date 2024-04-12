@@ -144,33 +144,18 @@ async def on_ready():
 
     print("[italic green]Done succefully.[/italic green]\n")
 
-    print("[bold blue]>> REFRESHING EVERYONE'S PREFIXES[/bold blue]")
-    print("[italic blue]in server " + guild.name + "[/italic blue]\n")
-    await prefixes_commands.refresh_everyone(guild)
-    print("\n[italic green]Done succefully.[/italic green]\n")
-
     print("[bold blue]>> UPDATING TICKETS CONTROL MESSAGE[/bold blue]")
     await tickets_commands.send_control_message(None, edit=True)
     print("[italic green]Done succefully.[/italic green]\n")
 
-    # print("[bold blue]>> SENDING RECRUITEMENT FORM MESSAGE[bold blue]")
+    print("[bold blue]>> SENDING RECRUITEMENT FORM MESSAGE[bold blue]")
+    await RecruitmentForm.send_control_message(guild, bot)
+    print("[italic green]Done succefully.[/italic green]\n")
 
-    # btn = nextcord.ui.Button(label="Formulaire", emoji="📝")
-
-    # async def btn_callback(interaction: nextcord.Interaction):
-    #     await interaction.response.send_modal(RecruitmentForm())
-
-    # btn.callback = btn_callback
-    # view = nextcord.ui.View()
-    # view.add_item(btn)
-    # await guild.get_channel(AUTO_ROLES_CHANNEL_ID).send(
-    #     embed=nextcord.Embed(
-    #         title="Formulaire recrutement",
-    #         description="Cliquez sur le bouton pour remplir le formulaire.",
-    #     ),
-    #     view=view,
-    # )
-    # print("[italic green]Done succefully.[/italic green]\n")
+    print("[bold blue]>> REFRESHING EVERYONE'S PREFIXES[/bold blue]")
+    print("[italic blue]in server " + guild.name + "[/italic blue]\n")
+    await prefixes_commands.refresh_everyone(guild)
+    print("\n[italic green]Done succefully.[/italic green]\n")
 
 
 if __name__ == "__main__":

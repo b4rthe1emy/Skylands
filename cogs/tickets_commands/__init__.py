@@ -92,6 +92,8 @@ class TicketsCommands(commands.Cog):
             ephemeral=True,
         )
 
+        return ticket_channel
+
     @nextcord.slash_command(
         "envoyer_message_tickets",
         "Envoie le message avec le bouton pour créer un ticket",
@@ -352,7 +354,7 @@ class TicketsCommands(commands.Cog):
             interaction.channel_id
         )
         for user in ticket_channel.members:
-            if True:  # user.bot:
+            if user.bot:
                 continue
             await user.send(
                 embed=nextcord.Embed(
