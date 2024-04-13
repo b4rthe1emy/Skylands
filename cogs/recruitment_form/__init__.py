@@ -11,7 +11,9 @@ from cogs.tickets_commands import TicketsCommands
 
 
 class RecruitmentForm(nextcord.ui.Modal):
-    async def send_control_message(guild: nextcord.Guild, bot: commands.Bot):
+    async def send_control_message(
+        guild: nextcord.Guild, bot: commands.Bot, edit=False
+    ):
         async def button_callback(interaction: nextcord.Interaction):
             confirm_button = nextcord.ui.Button(label="C'est parti !", emoji="📝")
 
@@ -52,7 +54,23 @@ class RecruitmentForm(nextcord.ui.Modal):
         button.callback = button_callback
         confirm_view = nextcord.ui.View(timeout=None)
         confirm_view.add_item(button)
-        await guild.get_channel(RECRUITEMENT_CHANNEL_ID).send(
+
+        if edit:
+            messages = (
+                await guild.get_channel(RECRUITEMENT_CHANNEL_ID).history().flatten()
+            )
+            messages = [msg for msg in messages if msg.author == bot.user]
+            try:
+                last_bot_msg: nextcord.Message = messages[0]
+            except IndexError:
+                action = guild.get_channel(RECRUITEMENT_CHANNEL_ID).send
+            else:
+                action = last_bot_msg.edit
+
+        else:
+            action = guild.get_channel(RECRUITEMENT_CHANNEL_ID).send
+
+        await action(
             embed=nextcord.Embed(
                 title="Formulaire recrutement",
                 description="Cliquez sur le bouton pour remplir le formulaire.",

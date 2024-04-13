@@ -148,8 +148,8 @@ async def on_ready():
     await tickets_commands.send_control_message(None, edit=True)
     print("[italic green]Done succefully.[/italic green]\n")
 
-    print("[bold blue]>> SENDING RECRUITEMENT FORM MESSAGE[bold blue]")
-    await RecruitmentForm.send_control_message(guild, bot)
+    print("[bold blue]>> UPDATING RECRUITEMENT FORM MESSAGE[bold blue]")
+    await RecruitmentForm.send_control_message(guild, bot, edit=True)
     print("[italic green]Done succefully.[/italic green]\n")
 
     print("[bold blue]>> REFRESHING EVERYONE'S PREFIXES[/bold blue]")
