@@ -301,7 +301,12 @@ class TicketsCommands(commands.Cog):
         return member.id == ticket_info["owner_id"]
 
     def is_member_an_admin(self, member: nextcord.Member):
-        return member.get_role(ADMIN_ROLE_ID) is not None
+        return (
+            member.get_role(ADMIN_ROLE_ID) is not None
+            or member.get_role(OWNER_ROLE_ID) is not None
+            or member.get_role(SYS_STAFF_ROLE_ID) is not None
+            or member.get_role(JM_OWNER_ROLE_ID) is not None
+        )
 
     @tickets.subcommand("fermer", "Ferme le ticket")
     async def close_ticket_command(
