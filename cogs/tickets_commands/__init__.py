@@ -7,8 +7,12 @@ import json
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
 TICKETS_CATEGORY = int(dotenv.get_key(dotenv.find_dotenv(), "TICKETS_CATEGORY"))
 MEMBER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "MEMBER_ROLE_ID"))
-ADMIN_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "ADMIN_ROLE_ID"))
 TICKETS_CHANNEL_ID = int(dotenv.get_key(dotenv.find_dotenv(), "TICKETS_CHANNEL_ID"))
+
+ADMIN_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "ADMIN_ROLE_ID"))
+OWNER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "OWNER_ROLE_ID"))
+SYS_STAFF_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SYS_STAFF_ROLE_ID"))
+JM_OWNER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "JM_OWNER_ROLE_ID"))
 
 
 class TicketsCommands(commands.Cog):
