@@ -1,4 +1,3 @@
-from discord import ButtonStyle, Emoji, PartialEmoji
 import nextcord
 from nextcord.ext import commands
 from rich import print
