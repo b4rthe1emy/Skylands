@@ -15,17 +15,23 @@ class RecruitmentForm(nextcord.ui.Modal):
         guild: nextcord.Guild, bot: commands.Bot, edit=False
     ):
         async def button_callback(interaction: nextcord.Interaction):
-            confirm_button = nextcord.ui.Button(label="C'est parti !", emoji="📝")
+            confirm_view = nextcord.ui.View(timeout=None)
+
+            confirm_button = nextcord.ui.Button(
+                label="C'est parti !", emoji="📝", style=nextcord.ButtonStyle.green
+            )
 
             async def confirm_button_callback(interaction: nextcord.Interaction):
                 await interaction.response.send_modal(RecruitmentForm(bot))
 
             confirm_button.callback = confirm_button_callback
-            confirm_view = nextcord.ui.View()
+
             confirm_view.add_item(confirm_button)
             await interaction.response.send_message(
                 embeds=[
-                    nextcord.Embed(title="Formulaire recrutement"),
+                    nextcord.Embed(
+                        title="Formulaire recrutement",
+                    ),
                     nextcord.Embed(
                         title="Attention",
                         description="> Le formulaire que nous utilisons pour recruter du personnel "
@@ -72,8 +78,22 @@ class RecruitmentForm(nextcord.ui.Modal):
 
         await action(
             embed=nextcord.Embed(
-                title="Formulaire recrutement",
-                description="Cliquez sur le bouton pour remplir le formulaire.",
+                title="Recrutement Skylands",
+                description="Si vous êtes intéressé, voici si les instructions et les démarches à prendre pour "
+                "rejoindre le staff de Skylands :",
+            )
+            .add_field(
+                name="Prérequis",
+                value="Avant tout, il faut avoir un minimum de connaissance sur le serveur, avoir un micro, "
+                "avoir une bonne orthographe et avoir lu [le règlement](https://skylandsmc.fr/rules).",
+                inline=False,
+            )
+            .add_field(
+                name="Démarches",
+                value="- Remplissez le formulaire en cliquant sur le bouton en dessous de ce message.\n"
+                "- Si tout se passe bien, vous passerez un entretient oral pour en savoir davantage sur vous.\n"
+                "- Attendez une réponse du staff et si vous êtes pris, vous passerez une courte formation.",
+                inline=False,
             ),
             view=confirm_view,
         )
