@@ -117,13 +117,78 @@ class TicketsCommands(commands.Cog):
     ):
         edit = True if edit == "Oui" or edit == True else False
         view = nextcord.ui.View(timeout=None)
-        btn = nextcord.ui.Button(label="Créer un ticket", emoji="🎟️")
+
+        self.tickets_reasons = [
+            nextcord.SelectOption(
+                emoji="🤔",
+                label="Problème",
+                description="Je n'arrive pas à faire quelque chose",
+            ),
+            nextcord.SelectOption(
+                emoji="👜",
+                label="Stuff disparu",
+                description="J'ai perdu/me suis fait volé quelque chose",
+            ),
+            nextcord.SelectOption(
+                emoji="👎",
+                label="Report",
+                description="Cheat, insulte, non-respect des joueurs, grief...",
+            ),
+            nextcord.SelectOption(
+                emoji="🪲",
+                label="Bug",
+                description="J'ai trouvé un bug",
+            ),
+        ]
+
+        choices = nextcord.ui.StringSelect(
+            placeholder="Sélctionne une raison pour créer ton ticket",
+            options=self.tickets_reasons,
+        )
 
         async def callback(interaction: nextcord.Interaction):
-            await self.create_ticket(interaction)
+            reason = choices.values[0]
 
-        btn.callback = callback
-        view.add_item(btn)
+            confirm_view = nextcord.ui.View(timeout=None)
+            confirm_button = nextcord.ui.Button(emoji="🎟️", label="Je suis sûr !")
+
+            async def confrim_callback(confirm_interaction: nextcord.Interaction):
+                channel = await self.create_ticket(confirm_interaction)
+                await channel.send(
+                    embed=nextcord.Embed(
+                        description=f"## {interaction.user.mention} a créé un ticket\n"
+                    ).add_field(name="Raison :", value=reason)
+                )
+
+            confirm_button.callback = confrim_callback
+            confirm_view.add_item(confirm_button)
+
+            labels = [option.label for option in self.tickets_reasons]
+            descriptions = [option.description for option in self.tickets_reasons]
+            index = labels.index(reason)
+            description = descriptions[index]
+
+            await interaction.response.send_message(
+                embed=nextcord.Embed(
+                    title="Es-tu sûr ?",
+                    description="Tu est sur le point de créer un ticket.",
+                )
+                .add_field(name="Raison :", value=reason, inline=False)
+                .add_field(name="Description :", value=description, inline=False),
+                ephemeral=True,
+                view=confirm_view,
+            )
+
+        choices.callback = callback
+        view.add_item(choices)
+
+        # btn = nextcord.ui.Button(label="Créer un ticket", emoji="🎟️")
+
+        # async def callback(interaction: nextcord.Interaction):
+        #     await self.create_ticket(interaction)
+
+        # btn.callback = callback
+        # view.add_item(btn)
 
         if edit:
             messages = (
