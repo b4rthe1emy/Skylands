@@ -7,7 +7,7 @@ RECRUITEMENT_CHANNEL_ID = int(
     dotenv.get_key(dotenv.find_dotenv(), "RECRUITEMENT_CHANNEL_ID")
 )
 
-from cogs.tickets_commands import TicketsCommands
+from cogs.tickets import Tickets
 
 
 class RecruitmentForm(nextcord.ui.Modal):
@@ -101,7 +101,7 @@ class RecruitmentForm(nextcord.ui.Modal):
     async def callback(self, interaction: nextcord.Interaction):
         values = {item.label: item.value for item in self.items}
 
-        ticket = await TicketsCommands(self.bot).create_ticket(interaction)
+        ticket = await Tickets(self.bot).create_ticket(interaction)
         embed = nextcord.Embed(
             title=f"{interaction.user.global_name} veut faire parti du staff!",
             description=f"{interaction.user.mention} a rempli le formulaire de recrutement !\n"

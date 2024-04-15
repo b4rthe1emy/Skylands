@@ -36,7 +36,7 @@ ROLE_PREFIXS: dict[int, str | None] = {
 }
 
 
-class PrefixesCommands(commands.Cog):
+class Prefixes(commands.Cog):
     @property
     def server(self):
         return self.bot.get_guild(SKYLANDS_GUILD_ID)

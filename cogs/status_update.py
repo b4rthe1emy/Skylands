@@ -6,7 +6,7 @@ import dotenv
 STATUS_CHANNEL_ID = dotenv.get_key(dotenv.find_dotenv(), "STATUS_CHANNEL_ID")
 
 
-class StatusUpdateCommands(commands.Cog):
+class StatusUpdate(commands.Cog):
     def __init__(self, bot) -> None:
         super().__init__()
         self.bot: commands.Bot = bot

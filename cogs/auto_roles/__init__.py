@@ -4,7 +4,7 @@ from rich import print
 from .auto_roles_tracker import *
 
 
-class AutoRolesCommands(commands.Cog):
+class AutoRoles(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
         self.tracker = auto_roles_tracker.AutoRolesTracker(bot)

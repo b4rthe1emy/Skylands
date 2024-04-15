@@ -3,7 +3,7 @@ from nextcord.ext import commands
 from rich import print
 
 
-class ClearChannelMessagesCommand(commands.Cog):
+class ClearChannelMessages(commands.Cog):
     @nextcord.slash_command(
         "supprimer_les_messages",
         "ATTENTION: SUPPRIME TOUS LES MESSAGES DU SALON. À UTILISER UNIQUEMENT SI TU SAIS CE QUE TU FAIS!!!",

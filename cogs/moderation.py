@@ -10,7 +10,7 @@ ADMIN_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "ADMIN_ROLE_ID"))
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
 
 
-class ModerationCommands(commands.Cog):
+class Moderation(commands.Cog):
 
     def __init__(self, bot) -> None:
         super().__init__()

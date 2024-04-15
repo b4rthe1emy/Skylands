@@ -12,7 +12,7 @@ ADMIN_ROLE_ID = str(dotenv.get_key(dotenv_file, "ADMIN_ROLE_ID"))
 ADMIN_ONLY_CHANNEL_ID = int(dotenv.get_key(dotenv_file, "ADMIN_ONLY_CHANNEL_ID"))
 
 
-class PollCommands(commands.Cog):
+class Polls(commands.Cog):
     """
     Poll commands cog.
     """

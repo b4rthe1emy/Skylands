@@ -3,7 +3,7 @@ from rich import print
 from nextcord.ext import commands
 
 
-class MiscellaneousCommands(commands.Cog):
+class Miscellaneous(commands.Cog):
     @nextcord.slash_command(name="vote", description="Lien pour voter")
     async def vote(self, interaction: nextcord.Interaction):
         await interaction.response.send_message(

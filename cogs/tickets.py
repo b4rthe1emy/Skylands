@@ -15,7 +15,7 @@ SYS_STAFF_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SYS_STAFF_ROLE_ID"
 JM_OWNER_ROLE_ID = int(dotenv.get_key(dotenv.find_dotenv(), "JM_OWNER_ROLE_ID"))
 
 
-class TicketsCommands(commands.Cog):
+class Tickets(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
         self.bot: commands.Bot = bot

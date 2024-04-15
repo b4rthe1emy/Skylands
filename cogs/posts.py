@@ -12,7 +12,7 @@ WIP_POST_TAG_ID = int(dotenv.get_key(dotenv.find_dotenv(), "WIP_POST_TAG_ID"))
 ENDED_POST_TAG_ID = int(dotenv.get_key(dotenv.find_dotenv(), "ENDED_POST_TAG_ID"))
 
 
-class PostUtilities(commands.Cog):
+class Posts(commands.Cog):
     bot: commands.Bot
 
     def __init__(self, bot) -> None:

@@ -4,7 +4,7 @@ from nextcord.ext import commands
 import dotenv
 
 
-class RulesCommand(commands.Cog):
+class Rules(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
         self.bot = bot

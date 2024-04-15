@@ -21,31 +21,31 @@ bot = commands.Bot(
     activity=bot_activity,
 )
 
-from cogs.poll_commands import PollCommands
-from cogs.miscellaneous_commands import MiscellaneousCommands
-from cogs.moderation_commands import ModerationCommands
-from cogs.status_update_commands import StatusUpdateCommands
+from cogs.polls import Polls
+from cogs.miscellaneous import Miscellaneous
+from cogs.moderation import Moderation
+from cogs.status_update import StatusUpdate
 from cogs.member_join import MemberJoin
-from cogs.posts_utilities import PostUtilities
-from cogs.prefixes_comands import PrefixesCommands
-from cogs.clear_channel_messages_command import ClearChannelMessagesCommand
-from cogs.auto_roles_commands import AutoRolesCommands
+from cogs.posts import Posts
+from cogs.prefixes import Prefixes
+from cogs.clear_channel_messages import ClearChannelMessages
+from cogs.auto_roles import AutoRoles
 
 from cogs.recruitment_form import RecruitmentForm
-from cogs.tickets_commands import TicketsCommands
-from cogs.rules_message import RulesCommand
+from cogs.tickets import Tickets
+from cogs.rules import Rules
 
-bot.add_cog(PollCommands())
-bot.add_cog(MiscellaneousCommands())
-bot.add_cog(ModerationCommands(bot))
-bot.add_cog(StatusUpdateCommands(bot))
+bot.add_cog(Polls())
+bot.add_cog(Miscellaneous())
+bot.add_cog(Moderation(bot))
+bot.add_cog(StatusUpdate(bot))
 bot.add_cog(MemberJoin(bot))
-bot.add_cog(PostUtilities(bot))
-bot.add_cog(prefixes_commands := PrefixesCommands(bot))
-bot.add_cog(ClearChannelMessagesCommand())
-bot.add_cog(auto_roles_commands := AutoRolesCommands(bot))
-bot.add_cog(tickets_commands := TicketsCommands(bot))
-bot.add_cog(rules_commands := RulesCommand(bot))
+bot.add_cog(Posts(bot))
+bot.add_cog(prefixes_commands := Prefixes(bot))
+bot.add_cog(ClearChannelMessages())
+bot.add_cog(auto_roles_commands := AutoRoles(bot))
+bot.add_cog(tickets_commands := Tickets(bot))
+bot.add_cog(rules_commands := Rules(bot))
 bot.add_all_cog_commands()
 
 
