@@ -44,7 +44,7 @@ bot.add_cog(prefixes_commands := Prefixes(bot))
 bot.add_cog(ClearChannelMessages())
 bot.add_cog(auto_roles_commands := AutoRoles(bot))
 bot.add_cog(tickets_commands := Tickets(bot))
-bot.add_cog(rules_commands := Rules)
+bot.add_cog(rules_commands := Rules(bot))
 bot.add_all_cog_commands()
 
 
