@@ -208,30 +208,19 @@ class TicketsCommands(commands.Cog):
         await action(
             embeds=[
                 nextcord.Embed(
-                    title="Règles des tickets",
-                    description="Voici les règles à lire avant de créer un ticket :",
-                )
-                .add_field(
-                    name="Règle 1",
-                    value="Merci de créer un ticket uniquement pour les raison "
-                    "listées dans le menu déroulant en dessous de ce message",
-                    inline=False,
-                )
-                .add_field(
-                    name="Règle 2",
-                    value="Merci de ne pas ouvrir un ticket pour un recrutement.",
-                    inline=False,
-                )
-                .add_field(
-                    name="Règle 3",
-                    value="Merci de ne pas créer un ticket uniquement dans le but "
-                    "de déranger le staff.",
-                    inline=False,
-                )
-                .add_field(
-                    name="Règle 4",
-                    value="Merci de ne pas ouvrir un ticket dans le seul but de "
-                    "poser une question.",
+                    title="Règlement",
+                    description="Les [règles générales de Skylands](<https://skylandsmc.fr/rules>) s'appliquent "
+                    "également dans les tickets.",
+                ).add_field(
+                    name="Règles des tickets",
+                    value="- Merci de créer un ticket uniquement pour les raison "
+                    "listées dans le menu déroulant en dessous de ce message.\n"
+                    "- Merci de ne pas ouvrir un ticket pour un recrutement.\n"
+                    "- Merci de ne pas créer un ticket uniquement dans le but "
+                    "de déranger le staff.\n"
+                    "- Merci de ne pas ouvrir un ticket dans le seul but de "
+                    "poser une question. Le salon <#1207710360011018281> y est "
+                    "réservé.",
                     inline=False,
                 ),
                 nextcord.Embed(
