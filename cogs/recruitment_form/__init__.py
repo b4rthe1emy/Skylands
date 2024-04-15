@@ -79,7 +79,7 @@ class RecruitmentForm(nextcord.ui.Modal):
         await action(
             embed=nextcord.Embed(
                 title="Recrutement Skylands",
-                description="Si vous êtes intéressé, voici si les instructions et les démarches à prendre pour "
+                description="Si tu es intéressé, voici si les instructions et les démarches à prendre pour "
                 "rejoindre le staff de Skylands :",
             )
             .add_field(
@@ -90,9 +90,9 @@ class RecruitmentForm(nextcord.ui.Modal):
             )
             .add_field(
                 name="Démarches",
-                value="- Remplissez le formulaire en cliquant sur le bouton en dessous de ce message.\n"
-                "- Si tout se passe bien, vous passerez un entretient oral pour en savoir davantage sur vous.\n"
-                "- Attendez une réponse du staff et si vous êtes pris, vous passerez une courte formation.",
+                value="- Remplis le formulaire en cliquant sur le bouton en dessous de ce message.\n"
+                "- Si tout se passe bien, tu passera un entretient oral pour en savoir davantage sur toi.\n"
+                "- Attend une réponse du staff et si tu es pris, tu passera une courte formation.",
                 inline=False,
             ),
             view=confirm_view,
