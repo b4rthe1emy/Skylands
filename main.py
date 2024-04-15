@@ -8,6 +8,7 @@ SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"
 AUTO_ROLES_CHANNEL_ID = int(
     dotenv.get_key(dotenv.find_dotenv(), "AUTO_ROLES_CHANNEL_ID")
 )
+RULES_CHANNEL_ID = int(dotenv.get_key(dotenv.find_dotenv(), "RULES_CHANNEL_ID"))
 
 bot_activity = nextcord.Activity(
     name="Skylands",
@@ -32,6 +33,7 @@ from cogs.auto_roles_commands import AutoRolesCommands
 
 from cogs.recruitment_form import RecruitmentForm
 from cogs.tickets_commands import TicketsCommands
+from cogs.rules_message import RulesCommand
 
 bot.add_cog(PollCommands())
 bot.add_cog(MiscellaneousCommands())
@@ -43,6 +45,7 @@ bot.add_cog(prefixes_commands := PrefixesCommands(bot))
 bot.add_cog(ClearChannelMessagesCommand())
 bot.add_cog(auto_roles_commands := AutoRolesCommands(bot))
 bot.add_cog(tickets_commands := TicketsCommands(bot))
+bot.add_cog(rules_commands := RulesCommand(bot))
 bot.add_all_cog_commands()
 
 
@@ -151,6 +154,10 @@ async def on_ready():
     print("[bold blue]>> UPDATING RECRUITEMENT FORM MESSAGE[bold blue]")
     await RecruitmentForm.send_control_message(guild, bot, edit=True)
     print("[italic green]Done succefully.[/italic green]\n")
+
+    print("[bold blue]>> UPDATING RULES MESSAGE[/bold blue]")
+    await rules_commands.send_rules(bot.get_channel(RULES_CHANNEL_ID), edit=True)
+    print("\n[italic green]Done succefully.[/italic green]\n")
 
     print("[bold blue]>> REFRESHING EVERYONE'S PREFIXES[/bold blue]")
     print("[italic blue]in server " + guild.name + "[/italic blue]\n")
