@@ -1,7 +1,7 @@
 from nextcord.utils import MISSING
 from rich import print
 import nextcord
-from .polls_tracker import *
+from .tracker import *
 from utils.time_utils import to_datetime
 
 NUMBER_EMOJIS = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]

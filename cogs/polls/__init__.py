@@ -4,8 +4,8 @@ from rich import print
 import time
 import dotenv
 
-from .polls_tracker import *
-from .poll_buttons import *
+from .tracker import *
+from .buttons import *
 
 dotenv_file = dotenv.find_dotenv()
 ADMIN_ROLE_ID = str(dotenv.get_key(dotenv_file, "ADMIN_ROLE_ID"))

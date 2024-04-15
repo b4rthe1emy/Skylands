@@ -1,13 +1,13 @@
 import nextcord
 from nextcord.ext import commands
 from rich import print
-from .auto_roles_tracker import *
+from .tracker import *
 
 
 class AutoRoles(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__()
-        self.tracker = auto_roles_tracker.AutoRolesTracker(bot)
+        self.tracker = tracker.AutoRolesTracker(bot)
 
     @nextcord.slash_command(
         "auto_rôle",
@@ -50,7 +50,7 @@ class AutoRoles(commands.Cog):
         ),
     ):
         if not await self.tracker.add_auto_role(
-            auto_roles_tracker.AutoRole(name, button_color, int(role_id)), interaction
+            tracker.AutoRole(name, button_color, int(role_id)), interaction
         ):
             await self.tracker.send_message(interaction, ephemeral=True)
 
