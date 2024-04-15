@@ -10,7 +10,7 @@ class Rules(commands.Cog):
         self.bot = bot
 
     async def send_rules(self, channel: nextcord.TextChannel, edit: bool = False):
-        with open("cogs/rules_message/rules.md", "rt", encoding="utf8") as rules_file:
+        with open("cogs/rules/rules.md", "rt", encoding="utf8") as rules_file:
             rules: str = rules_file.read()
 
         embed = nextcord.Embed(
