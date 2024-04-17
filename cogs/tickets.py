@@ -120,11 +120,6 @@ class Tickets(commands.Cog):
 
         self.tickets_reasons = [
             nextcord.SelectOption(
-                emoji="🤔",
-                label="Problème",
-                description="Je n'arrive pas à faire quelque chose",
-            ),
-            nextcord.SelectOption(
                 emoji="👜",
                 label="Stuff disparu",
                 description="J'ai perdu/me suis fait volé quelque chose",
