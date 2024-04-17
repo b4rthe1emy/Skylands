@@ -29,7 +29,6 @@ from cogs.member_join import MemberJoin
 from cogs.posts import Posts
 from cogs.prefixes import Prefixes
 from cogs.clear_channel_messages import ClearChannelMessages
-from cogs.auto_roles import AutoRoles
 from cogs.recruitment_form import RecruitmentForm
 from cogs.tickets import Tickets
 from cogs.rules import Rules
@@ -43,7 +42,6 @@ bot.add_cog(MemberJoin(bot))
 bot.add_cog(Posts(bot))
 bot.add_cog(prefixes_commands := Prefixes(bot))
 bot.add_cog(ClearChannelMessages())
-bot.add_cog(auto_roles_commands := AutoRoles(bot))
 bot.add_cog(tickets_commands := Tickets(bot))
 bot.add_cog(rules_commands := Rules(bot))
 bot.add_cog(Giveways(bot))
