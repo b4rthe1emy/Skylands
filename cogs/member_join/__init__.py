@@ -65,7 +65,7 @@ class MemberJoin(commands.Cog):
             )
         image = ImageCaptcha(250, 100).generate(text)
 
-        view = nextcord.ui.View()
+        view = nextcord.ui.View(timeout=None)
 
         button = nextcord.ui.Button(label="Clique ICI pour faire le captcha")
         modal = nextcord.ui.Modal("CAPTCHA")
