@@ -15,3 +15,5 @@ Le spam est strictement interdit et mènera à des sanctions. Mentionner les adm
 
 Il est strictement interdit de faire de la publicité que se soit dans les salons vocaux ou écrits.
 
+### Article D - Vie privée 
+Aucune divulgation d’informations personnelles (photos, adresse, établissement…) qui ne respecte pas l’accord ou la vie privée de la personne visée n’est pas acceptée

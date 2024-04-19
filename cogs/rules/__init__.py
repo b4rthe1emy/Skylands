@@ -17,6 +17,7 @@ class Rules(commands.Cog):
             title="Règlement de Skylands",
             description=rules,
         )
+        embed.set_footer(text="Dernière modification : 19.04.2024")
 
         if edit:
             messages = await channel.history().flatten()
