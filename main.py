@@ -38,7 +38,7 @@ bot.add_cog(Polls())
 bot.add_cog(Miscellaneous())
 bot.add_cog(Moderation(bot))
 bot.add_cog(StatusUpdate(bot))
-bot.add_cog(MemberJoin(bot))
+bot.add_cog(member_join := MemberJoin(bot))
 bot.add_cog(Posts(bot))
 bot.add_cog(prefixes_commands := Prefixes(bot))
 bot.add_cog(ClearChannelMessages())
@@ -55,6 +55,8 @@ async def on_ready():
     pac.print_commands(bot)
 
     guild = bot.get_guild(SKYLANDS_GUILD_ID)
+
+    await member_join.invites_tracker.setup()
 
     print("[bold blue]>> UPDATING TICKETS CONTROL MESSAGE[/bold blue]")
     await tickets_commands.send_control_message(None, edit=True)

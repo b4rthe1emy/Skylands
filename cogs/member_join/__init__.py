@@ -4,6 +4,7 @@ from rich import print
 import dotenv
 from utils import time_utils
 import cogs.member_join.image_generator as img_gen
+import cogs.invitations as invitations
 
 from captcha.image import ImageCaptcha
 import random
@@ -22,7 +23,21 @@ WELCOME_IMAGE_FILE_PATH = dotenv.get_key(
 
 
 class MemberJoin(commands.Cog):
-    bot: nextcord.Client
+    def __init__(self, bot: nextcord.Client) -> None:
+        self.bot: commands.Bot = bot
+
+        @bot.event
+        async def on_member_join(member: nextcord.Member):
+            await self.send_welcome_message(member)
+            await member.add_roles(
+                self.skylands_guild.get_role(NON_VERIFIED_MEMBER_ROLE_ID)
+            )
+
+        @bot.event
+        async def on_member_remove(member: nextcord.Member):
+            await self.invites_tracker.update_invites(member)
+
+        self.invites_tracker = invitations.Tracker(self.bot)
 
     @property
     def welcome_channel(self):
@@ -33,6 +48,20 @@ class MemberJoin(commands.Cog):
         return self.bot.get_guild(SKYLANDS_GUILD_ID)
 
     async def send_welcome_message(self, member: nextcord.Member):
+        invite = await self.invites_tracker.get_invite_of_member(member)
+
+        msg_content = "Tu peux lier ton compte Minecraft avec ton compte Discord en tapant la commande `/link` en jeu."
+
+        if invite is not None:
+            # if invite.code == "skylandsmc":
+            #     msg_content += (
+            #         "\n\nTu as utilisé le lien <https://discord.gg/skylandsmc>"
+            #     )
+            # else:
+            msg_content += "\n\nTu as été invité par " + (
+                invite.inviter.global_name or invite.inviter.name
+            )
+
         embed = nextcord.Embed(
             color=0x3498DB,
             title="**Bienvenue sur Skylands**",
@@ -40,8 +69,12 @@ class MemberJoin(commands.Cog):
             timestamp=time_utils.to_datetime(),
         )
         embed.add_field(
-            name=f"🛬 Bienvenue **{member.global_name}**, amuse toi bien sur 𝐒𝐤𝐲𝐥𝐚𝐧𝐝𝐬 ! *(tu es le membre #{self.skylands_guild.member_count})*",
-            value="Tu peux lier ton compte Minecraft avec ton compte Discord en tapant la commande `/link` en jeu.",
+            name=(
+                f"🛬 Bienvenue **{member.global_name}**, amuse toi bien sur 𝐒𝐤𝐲𝐥𝐚𝐧𝐝𝐬 ! *(tu es le membre #"
+                + str(self.skylands_guild.member_count)
+                + ")*"
+            ),
+            value=msg_content,
         )
 
         await img_gen.generate_welcome_image(member)
@@ -125,13 +158,3 @@ class MemberJoin(commands.Cog):
         await interaction.response.send_message(
             f"Bienvenue souhaitée à {member.mention}.", ephemeral=True
         )
-
-    def __init__(self, bot: nextcord.Client) -> None:
-        self.bot: commands.Bot = bot
-
-        @self.bot.event
-        async def on_member_join(member: nextcord.Member):
-            await self.send_welcome_message(member)
-            await member.add_roles(
-                self.skylands_guild.get_role(NON_VERIFIED_MEMBER_ROLE_ID)
-            )
