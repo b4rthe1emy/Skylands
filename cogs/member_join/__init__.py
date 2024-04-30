@@ -48,16 +48,20 @@ class MemberJoin(commands.Cog):
         return self.bot.get_guild(SKYLANDS_GUILD_ID)
 
     async def send_welcome_message(self, member: nextcord.Member):
-        invite = await self.invites_tracker.get_invite_of_member(member)
+        try:
+            invite = await self.invites_tracker.get_invite_of_member(member)
+        except Exception as e:
+            invite = None
+            from types import TracebackType
+
+            print(
+                f"[red bold]Error while getting @{member.name}'s join method[/red bold]: "
+                + str(e)
+            )
 
         msg_content = "Tu peux lier ton compte Minecraft avec ton compte Discord en tapant la commande `/link` en jeu."
 
         if invite is not None:
-            # if invite.code == "skylandsmc":
-            #     msg_content += (
-            #         "\n\nTu as utilisé le lien <https://discord.gg/skylandsmc>"
-            #     )
-            # else:
             msg_content += "\n\nTu as été invité par " + (
                 invite.inviter.global_name or invite.inviter.name
             )
