@@ -49,14 +49,17 @@ class Miscellaneous(commands.Cog):
         title: str = nextcord.SlashOption(
             "titre", "Le titre de l'embed", required=True
         ),
-        description: str = nextcord.SlashOption(
-            "description", "La description de l'embed", required=False
-        ),
         preview: str = nextcord.SlashOption(
             "preview",
             "Si oui, le message sera visible que par toi",
             choices={"Oui": "Oui", "Non": "Non"},
             default="Non",
+        ),
+        image_url: str = nextcord.SlashOption(
+            "url_image", "L'URL de l'image à mettre dans l'embed", required=False
+        ),
+        description: str = nextcord.SlashOption(
+            "description", "La description de l'embed", required=False
         ),
         title1: str = nextcord.SlashOption(
             "titre_1", "Le titre du paragraphe 1", False
@@ -89,6 +92,7 @@ class Miscellaneous(commands.Cog):
             "paragraphe_5", "Le paragraphe 5", False
         ),
     ):
+        preview: bool = preview == "Oui"
         embed = nextcord.Embed()
         embed.description = "# " + title + "\n" + (description if description else "")
 
@@ -102,7 +106,8 @@ class Miscellaneous(commands.Cog):
             if title:
                 if not paragraph:
                     await interaction.response.send_message(
-                        f"❌ Comme tu as mis `titre_{i + 1}`, tu **dois** aussi mettre `paragraphe_{i + 1}`",
+                        f"❌ Comme tu as mis `titre_{i + 1}`, tu **dois** aussi mettre `paragraphe_{i + 1}`.\n"
+                        "*Attention : si tu ne met pas de* `titre_x`*, alors ce* `paragraphe_x` *ne sera pas pris en compte*",
                         ephemeral=True,
                     )
                     return
@@ -110,7 +115,12 @@ class Miscellaneous(commands.Cog):
                 embed.add_field(name=title, value=paragraph, inline=False)
                 i += 1
 
-        if preview == "Oui":
+        if image_url:
+            embed.set_image(url=image_url)
+
+        if preview:
             await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
             await interaction.channel.send(embed=embed)
+
+            await interaction.response.send_message("Embed envoyé", ephemeral=True)
