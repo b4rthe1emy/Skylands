@@ -49,6 +49,11 @@ class Miscellaneous(commands.Cog):
         title: str = nextcord.SlashOption(
             "titre", "Le titre de l'embed", required=True
         ),
+        description: str = nextcord.SlashOption(
+            "description",
+            'La description de l\'embed. Utilise "\\n" pour aller à la ligne',
+            required=False,
+        ),
         preview: str = nextcord.SlashOption(
             "preview",
             "Si oui, le message sera visible que par toi",
@@ -58,69 +63,71 @@ class Miscellaneous(commands.Cog):
         image_url: str = nextcord.SlashOption(
             "url_image", "L'URL de l'image à mettre dans l'embed", required=False
         ),
-        description: str = nextcord.SlashOption(
-            "description", "La description de l'embed", required=False
-        ),
-        title1: str = nextcord.SlashOption(
-            "titre_1", "Le titre du paragraphe 1", False
-        ),
-        paragraph1: str = nextcord.SlashOption(
-            "paragraphe_1", "Le paragraphe 1", False
-        ),
-        title2: str = nextcord.SlashOption(
-            "titre_2", "Le titre du paragraphe 2", False
-        ),
-        paragraph2: str = nextcord.SlashOption(
-            "paragraphe_2", "Le paragraphe 2", False
-        ),
-        title3: str = nextcord.SlashOption(
-            "titre_3", "Le titre du paragraphe 3", False
-        ),
-        paragraph3: str = nextcord.SlashOption(
-            "paragraphe_3", "Le paragraphe 3", False
-        ),
-        title4: str = nextcord.SlashOption(
-            "titre_4", "Le titre du paragraphe 4", False
-        ),
-        paragraph4: str = nextcord.SlashOption(
-            "paragraphe_4", "Le paragraphe 4", False
-        ),
-        title5: str = nextcord.SlashOption(
-            "titre_5", "Le titre du paragraphe 5", False
-        ),
-        paragraph5: str = nextcord.SlashOption(
-            "paragraphe_5", "Le paragraphe 5", False
-        ),
     ):
         preview: bool = preview == "Oui"
+        if description:
+            description = description.replace("\\n", "\n")
+
         embed = nextcord.Embed()
         embed.description = "# " + title + "\n" + (description if description else "")
-
-        titles = [title1, title2, title3, title4, title5]
-        paragraphs = [paragraph1, paragraph2, paragraph3, paragraph4, paragraph5]
-
-        for i in range(len(titles)):
-            paragraph = paragraphs[i]
-            title = titles[i]
-
-            if title:
-                if not paragraph:
-                    await interaction.response.send_message(
-                        f"❌ Comme tu as mis `titre_{i + 1}`, tu **dois** aussi mettre `paragraphe_{i + 1}`.\n"
-                        "*Attention : si tu ne met pas de* `titre_x`*, alors ce* `paragraphe_x` *ne sera pas pris en compte*",
-                        ephemeral=True,
-                    )
-                    return
-
-                embed.add_field(name=title, value=paragraph, inline=False)
-                i += 1
-
         if image_url:
             embed.set_image(url=image_url)
 
-        if preview:
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-        else:
-            await interaction.channel.send(embed=embed)
+        async def add_field(interaction: nextcord.Interaction):
+            async def modal_callback(modal_interaction: nextcord.Interaction):
+                embed.add_field(name=name.value, value=value.value, inline=False)
 
-            await interaction.response.send_message("Embed envoyé", ephemeral=True)
+                await modal_interaction.response.send_message(
+                    embed=nextcord.Embed(
+                        description="## Paragraphe ajouté\n\n"
+                        "### Titre du paragraphe\n> "
+                        + name.value
+                        + "\n### Contenu du paragraphe\n"
+                        + value.value
+                    ),
+                    ephemeral=True,
+                )
+
+            modal = nextcord.ui.Modal("Ajouter un paragraphe", timeout=None)
+
+            modal.add_item(
+                name := nextcord.ui.TextInput("Titre du paragraphe", required=True)
+            )
+            modal.add_item(
+                value := nextcord.ui.TextInput(
+                    "Contenu du paragraphe",
+                    style=nextcord.TextInputStyle.paragraph,
+                    required=True,
+                )
+            )
+
+            modal.callback = modal_callback
+            await interaction.response.send_modal(modal)
+
+        async def send_embed(interaction: nextcord.Interaction):
+            if preview:
+                await interaction.response.send_message(embed=embed, ephemeral=True)
+            else:
+                await interaction.channel.send(embed=embed)
+
+        view = nextcord.ui.View(timeout=None)
+
+        add_field_button = nextcord.ui.Button(label="Ajouter un paragraphe", emoji="📝")
+        add_field_button.callback = add_field
+        view.add_item(add_field_button)
+
+        send_embed_button = nextcord.ui.Button(label="Envoyer l'embed", emoji="📨")
+        send_embed_button.callback = send_embed
+        view.add_item(send_embed_button)
+
+        await interaction.response.send_message(
+            embed=nextcord.Embed(title="Embed")
+            .add_field(name="Titre", value=title, inline=False)
+            .add_field(
+                name="Description",
+                value=(description if description else "> *Pas de description*"),
+                inline=False,
+            ),
+            view=view,
+            ephemeral=True,
+        )
