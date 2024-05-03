@@ -52,7 +52,6 @@ class MemberJoin(commands.Cog):
             invite = await self.invites_tracker.get_invite_of_member(member)
         except Exception as e:
             invite = None
-            from types import TracebackType
 
             print(
                 f"[red bold]Error while getting @{member.name}'s join method[/red bold]: "
@@ -62,8 +61,15 @@ class MemberJoin(commands.Cog):
         msg_content = "Tu peux lier ton compte Minecraft avec ton compte Discord en tapant la commande `/link` en jeu."
 
         if invite is not None:
-            msg_content += "\n\nTu as été invité par " + (
-                invite.inviter.global_name or invite.inviter.name
+            nb_invs = self.invites_tracker.add_user_to_inviter(
+                invite.inviter.id, member.id
+            )
+            msg_content += (
+                "\n\nTu as été invité par "
+                + (invite.inviter.global_name or invite.inviter.name)
+                + " qui a maintenant "
+                + str(nb_invs)
+                + " invitations."
             )
 
         embed = nextcord.Embed(
