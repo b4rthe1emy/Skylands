@@ -13,14 +13,17 @@ WELCOME_IMAGE_FILE_PATH = dotenv.get_key(
 
 
 async def generate_welcome_image(member: nextcord.Member):
-
-    await member.avatar.save("image.png")
     image = Image.new(
         "RGBA",
         (BORDER_SIZE + AVATAR_SIZE + 600, BORDER_SIZE + AVATAR_SIZE + BORDER_SIZE),
         (0, 0, 0, 0),
     )
-    pdp = Image.open("image.png")
+    if member.avatar:
+        await member.avatar.save("image.png")
+
+        pdp = Image.open("image.png")
+    else:
+        pdp = Image.new("RGBA", (AVATAR_SIZE, AVATAR_SIZE), 0xFFFFFF)
     pdp = pdp.convert("RGBA")
 
     pdp = pdp.resize((AVATAR_SIZE, AVATAR_SIZE))
