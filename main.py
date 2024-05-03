@@ -33,6 +33,7 @@ from cogs.recruitment_form import RecruitmentForm
 from cogs.tickets import Tickets
 from cogs.rules import Rules
 from cogs.giveways import Giveways
+from cogs.invitations import Invitations
 
 bot.add_cog(Polls())
 bot.add_cog(Miscellaneous())
@@ -45,6 +46,7 @@ bot.add_cog(ClearChannelMessages())
 bot.add_cog(tickets_commands := Tickets(bot))
 bot.add_cog(rules_commands := Rules(bot))
 bot.add_cog(Giveways(bot))
+bot.add_cog(Invitations(member_join.invites_tracker))
 bot.add_all_cog_commands()
 
 
