@@ -70,7 +70,7 @@ async def on_ready():
 
     print("[bold blue]>> UPDATING RULES MESSAGE[/bold blue]")
     await rules_commands.send_rules(bot.get_channel(RULES_CHANNEL_ID), edit=True)
-    print("\n[italic green]Done succefully.[/italic green]\n")
+    print("[italic green]Done succefully.[/italic green]\n")
 
     print("[bold blue]>> REFRESHING EVERYONE'S PREFIXES[/bold blue]")
     print("[italic blue]in server " + guild.name + "[/italic blue]\n")
