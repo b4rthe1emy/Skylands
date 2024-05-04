@@ -472,25 +472,13 @@ class Tickets(commands.Cog):
         ticket_channel: nextcord.TextChannel = self.server.get_channel(
             interaction.channel_id
         )
-        for user in ticket_channel.members:
-            if user.bot:
-                continue
-            await user.send(
-                embed=nextcord.Embed(
-                    title="Ticket fermé",
-                )
-                .add_field(
-                    name="Fermé par :", value=interaction.user.mention, inline=False
-                )
-                .add_field(name="Raison :", value="> " + reason, inline=False),
+
+        await self.bot.get_user(int(tickets[ticket_index]["owner_id"])).send(
+            embed=nextcord.Embed(
+                title="Ticket fermé",
             )
-
-        # new_perms = self.default_permissions
-        # new_perms.send_messages = False
-
-        # await ticket_channel.set_permissions(
-        #     self.server.get_role(MEMBER_ROLE_ID),
-        #     overwrite=new_perms,
-        # )
+            .add_field(name="Fermé par :", value=interaction.user.mention, inline=False)
+            .add_field(name="Raison :", value="> " + reason, inline=False),
+        )
 
         await ticket_channel.delete()
