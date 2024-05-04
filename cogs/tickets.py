@@ -209,8 +209,9 @@ class Tickets(commands.Cog):
             embeds=[
                 nextcord.Embed(
                     title="Règlement",
-                    description="Les [règles générales de Skylands](<https://skylandsmc.fr/rules>) s'appliquent "
-                    "également dans les tickets.",
+                    description="Les [règles générales de Skylands]"
+                    "(<https://discord.com/channels/1073936071768932372/1126569655759274035>) "
+                    "s'appliquent également dans les tickets.",
                 ).add_field(
                     name="Règles des tickets",
                     value="- Merci de créer un ticket uniquement pour les raison "
