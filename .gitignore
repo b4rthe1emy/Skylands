@@ -1,6 +1,6 @@
 # jsons
 polls.json
-autoRoles.json
+invites.json
 tickets.json
 giveways.json
 
@@ -8,7 +8,7 @@ giveways.json
 image.png
 
 # Tests
-cogs/test/*
+test.py
 
 ###########################
 
