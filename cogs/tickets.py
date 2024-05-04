@@ -260,9 +260,9 @@ class Tickets(commands.Cog):
         if await self.handle_ticket_error(interaction):
             return
 
-        if not self.is_member_an_admin(
-            interaction.user
-        ) and not self.is_member_the_ticket_owner(interaction.user, ticket):
+        if not self.is_admin(interaction.user) and not self.is_ticket_owner(
+            interaction.user, ticket
+        ):
             self.send_error_message(
                 interaction,
                 "Tu ne peux pas ajouter/enlever de membre dans ce ticket "
@@ -346,9 +346,7 @@ class Tickets(commands.Cog):
             ephemeral=True,
         )
 
-    def is_member_the_ticket_owner(
-        self, member: nextcord.Member, ticket: nextcord.TextChannel
-    ):
+    def is_ticket_owner(self, member: nextcord.Member, ticket: nextcord.TextChannel):
         with open("tickets.json", "rt") as ticket_counter_file:
             tickets: list = json.loads(ticket_counter_file.read())
 
@@ -358,7 +356,7 @@ class Tickets(commands.Cog):
 
         return member.id == ticket_info["owner_id"]
 
-    def is_member_an_admin(self, member: nextcord.Member):
+    def is_admin(self, member: nextcord.Member):
         return (
             member.get_role(ADMIN_ROLE_ID) is not None
             or member.get_role(OWNER_ROLE_ID) is not None
@@ -381,9 +379,9 @@ class Tickets(commands.Cog):
         if await self.handle_ticket_error(interaction):
             return
 
-        if not self.is_member_the_ticket_owner(
+        if not self.is_ticket_owner(
             interaction.user, interaction.channel
-        ) and not self.is_member_an_admin(interaction.user):
+        ) and not self.is_admin(interaction.user):
             await self.send_error_message(
                 interaction,
                 "Tu dois être le propriétaire du ticket ou un administrateur pour pouvoir demander de fermer le ticket.",
@@ -397,8 +395,8 @@ class Tickets(commands.Cog):
             requester = interaction.user
             closer = button_interaction.user
 
-            if self.is_member_an_admin(requester):
-                if self.is_member_an_admin(closer) or self.is_member_the_ticket_owner(
+            if self.is_admin(requester):
+                if self.is_admin(closer) or self.is_ticket_owner(
                     closer, interaction.channel
                 ):
                     await self.close_ticket(button_interaction, reason)
@@ -410,8 +408,8 @@ class Tickets(commands.Cog):
                         "*PS: Les administrateurs peuvent contourner ce message.*",
                     )
 
-            elif self.is_member_the_ticket_owner(requester, interaction.channel):
-                if self.is_member_an_admin(closer):
+            elif self.is_ticket_owner(requester, interaction.channel):
+                if self.is_admin(closer):
                     await self.close_ticket(button_interaction, reason)
 
                 else:
@@ -442,7 +440,7 @@ class Tickets(commands.Cog):
                 value=(
                     (
                         "L'administrateur : "
-                        if self.is_member_an_admin(interaction.user)
+                        if self.is_admin(interaction.user)
                         else "Le propriétaire du ticket : "
                     )
                     + interaction.user.mention
