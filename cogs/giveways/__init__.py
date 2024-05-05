@@ -27,9 +27,16 @@ class Giveways(commands.Cog):
         async def button_callback(interaction: nextcord.Interaction):
             giveways = self.tracker.get_giveways()
 
-            this_giveway = giveways[
-                [gw["message_id"] for gw in giveways].index(giveway["message_id"])
-            ]
+            try:
+                this_giveway = giveways[
+                    [gw["message_id"] for gw in giveways].index(giveway["message_id"])
+                ]
+            except ValueError:
+                await interaction.response.send_message(
+                    "❌ Le giveway n'existe plus...", ephemeral=True
+                )
+                return
+
             if interaction.user.id in this_giveway["participants"]:
                 await interaction.response.send_message(
                     "❌ Tu participes déjà à ce giveway.", ephemeral=True
