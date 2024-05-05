@@ -39,7 +39,11 @@ class Giveways(commands.Cog):
             this_giveway["participants"].append(interaction.user.id)
             self.tracker.set_giveways(giveways)
 
-            await self.send_giveway_message(this_giveway, giveway["message_id"])
+            await self.send_giveway_message(
+                this_giveway,
+                interaction.channel,
+                edit_message_id=int(giveway["message_id"]),
+            )
 
             await interaction.response.send_message("✅ Réussi", ephemeral=True)
 
@@ -51,6 +55,7 @@ class Giveways(commands.Cog):
     async def send_giveway_message(
         self,
         giveway: dict,
+        channel: nextcord.TextChannel,
         edit_message_id: int | None = None,
     ):
         embed = nextcord.Embed(description="# Giveway !\n")
@@ -77,17 +82,13 @@ class Giveways(commands.Cog):
             embed.description += "**Récompense** : " + giveway["reward"]
 
         if not edit_message_id:
-            return await self.bot.get_channel(GIVEWAYS_CHANNEL_ID).send(
-                "<@&" + str(EVENTS_ROLE_ID) + ">",
+            return await channel.send(
+                f"<@&{EVENTS_ROLE_ID}>",
                 embed=embed,
                 view=self.get_participate_view(giveway),
             )
         else:
-            return (
-                await self.bot.get_channel(GIVEWAYS_CHANNEL_ID)
-                .get_partial_message(edit_message_id)
-                .edit(embed=embed)
-            )
+            return await channel.get_partial_message(edit_message_id).edit(embed=embed)
 
     @nextcord.slash_command(
         "giveway",
@@ -172,9 +173,17 @@ class Giveways(commands.Cog):
         else:
             giveway["reward"] = rewards
 
-        message = await self.send_giveway_message(giveway)
+        message = await self.send_giveway_message(giveway, channel=interaction.channel)
         giveway["message_id"] = message.id
-
-        self.tracker.new_giveway(giveway, message)
+        try:
+            self.tracker.new_giveway(giveway, message)
+        except Exception as e:
+            await interaction.followup.send(
+                "❌ Erreur, contactez les développeurs\n||Erreur : ```\n"
+                + str(e)
+                + "\n```||",
+                ephemeral=True,
+            )
+            return
 
         await interaction.followup.send("✅ Créé", ephemeral=True)
