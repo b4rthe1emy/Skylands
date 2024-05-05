@@ -139,6 +139,11 @@ class Tickets(commands.Cog):
                 label="Remboursement",
                 description="Demander un remboursement",
             ),
+            nextcord.SelectOption(
+                emoji="🪧",
+                label="Autre",
+                description="Autre chose",
+            ),
         ]
 
         choices = nextcord.ui.StringSelect(
