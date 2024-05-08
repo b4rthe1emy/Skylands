@@ -105,10 +105,18 @@ class Miscellaneous(commands.Cog):
             await interaction.response.send_modal(modal)
 
         async def send_embed(interaction: nextcord.Interaction):
-            if preview:
-                await interaction.response.send_message(embed=embed, ephemeral=True)
-            else:
-                await interaction.channel.send(embed=embed)
+            try:
+                if preview:
+                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                else:
+                    await interaction.channel.send(embed=embed)
+            except nextcord.HTTPException:
+                await interaction.response.send_message(
+                    embed=nextcord.Embed(
+                        title="❌ URL Invalide : `" + str(image_url) + "`"
+                    ),
+                    ephemeral=True,
+                )
 
         view = nextcord.ui.View(timeout=None)
 
