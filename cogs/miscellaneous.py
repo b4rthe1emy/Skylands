@@ -113,7 +113,24 @@ class Miscellaneous(commands.Cog):
             except nextcord.HTTPException:
                 await interaction.response.send_message(
                     embed=nextcord.Embed(
-                        title="❌ URL Invalide : `" + str(image_url) + "`"
+                        title="❌ Quelque chose s'est mal passé en envoyant l'embed. Contactez les développeurs",
+                        description="**Debug**\n\n"
+                        f"`str` title = `{str(title)}`\n"
+                        f"`str` dsecription = `{str(description)}`\n"
+                        f"`str` image_url = `{str(image_url)}`\n"
+                        f"`bool` preview = `{str(preview)}`\n"
+                        + (
+                            "\n".join(
+                                [
+                                    "`Field` field\n"
+                                    f"> `str` name = `{str(field.name)}`\n"
+                                    f"> `str` value = `"
+                                    + str(field.value.replace("\n", "\\n"))
+                                    + "`"
+                                    for field in embed.fields
+                                ]
+                            )
+                        ),
                     ),
                     ephemeral=True,
                 )
