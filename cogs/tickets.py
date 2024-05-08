@@ -152,6 +152,28 @@ class Tickets(commands.Cog):
         )
 
         async def callback(interaction: nextcord.Interaction):
+            with open("tickets.json", "rt") as ticket_counter_file:
+                tickets: list[dict[str, int]] = json.loads(ticket_counter_file.read())
+
+            if interaction.user.id in [
+                ticket["owner_id"] for ticket in tickets if not ticket["closed"]
+            ]:
+                await interaction.response.send_message(
+                    embed=nextcord.Embed(
+                        title="❌ Tu ne peux créer qu'un seul ticket à la fois.",
+                        description="Tu as déjà créé le ticket <#"
+                        + str([
+                            ticket["channel_id"]
+                            for ticket in tickets
+                            if not ticket["closed"]
+                            and ticket["owner_id"] == interaction.user.id
+                        ][0])
+                        + ">",
+                    ),
+                    ephemeral=True,
+                )
+                return
+
             reason = choices.values[0]
 
             confirm_view = nextcord.ui.View(timeout=None)
