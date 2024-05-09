@@ -3,6 +3,7 @@ from nextcord.ext import commands
 from rich import print
 import dotenv
 import json
+import time
 
 SKYLANDS_GUILD_ID = int(dotenv.get_key(dotenv.find_dotenv(), "SKYLANDS_GUILD_ID"))
 TICKETS_CATEGORY = int(dotenv.get_key(dotenv.find_dotenv(), "TICKETS_CATEGORY"))
@@ -53,6 +54,53 @@ class Tickets(commands.Cog):
     def default_permissions(self):
         return nextcord.PermissionOverwrite(view_channel=False)
 
+    @nextcord.slash_command(
+        "eenregistrer_messages_ticket",
+        "Enregistre l'historiqe des messages de ce ticket",
+        default_member_permissions=nextcord.Permissions(administrator=True),
+    )
+    async def ticket_save_messages(self, interaction: nextcord.Interaction):
+        if await self.handle_ticket_error(interaction):
+            return
+
+        await interaction.response.defer(ephemeral=True)
+
+        with open("tickets.json", "rt") as ticket_file:
+            tickets: list = json.loads(ticket_file.read())
+
+        this_ticket_index = [ticket["channel_id"] for ticket in tickets].index(
+            interaction.channel.id
+        )
+        this_ticket = tickets[this_ticket_index]
+
+        this_ticket["messages"]["messages_saved"] = True
+        this_ticket["messages"]["last_save"] = int(time.time())
+        messages: list[dict[str, int | str]] = []
+
+        for message in await interaction.channel.history().flatten():
+            message: nextcord.Message
+            messages.append(
+                {
+                    "time": int(message.created_at.timestamp()),
+                    "author": int(message.author.id),
+                    "content": str(message.content),
+                }
+            )
+
+        messages.reverse()
+        this_ticket["messages"]["history"] = messages
+
+        tickets[this_ticket_index] = this_ticket
+        with open("tickets.json", "wt") as ticket_file:
+            ticket_file.write(json.dumps(tickets))
+
+        open("temp_ticket.json", "wt").write(json.dumps(this_ticket, indent=2))
+
+        await interaction.followup.send(
+            embed=nextcord.Embed(title="✅ Messages sauvegardés"),
+            file=nextcord.File("temp_ticket.json", filename="ticket.json"),
+        )
+
     async def create_ticket(self, interaction: nextcord.Interaction):
         author = interaction.user
         with open("tickets.json", "rt") as ticket_counter_file:
@@ -69,6 +117,7 @@ class Tickets(commands.Cog):
             "owner_id": author.id,
             "closed": False,
             "id": ticket_id,
+            "messages": {"messages_saved": False},
         }
         tickets.append(new_ticket)
 
@@ -162,12 +211,14 @@ class Tickets(commands.Cog):
                     embed=nextcord.Embed(
                         title="❌ Tu ne peux créer qu'un seul ticket à la fois.",
                         description="Tu as déjà créé le ticket <#"
-                        + str([
-                            ticket["channel_id"]
-                            for ticket in tickets
-                            if not ticket["closed"]
-                            and ticket["owner_id"] == interaction.user.id
-                        ][0])
+                        + str(
+                            [
+                                ticket["channel_id"]
+                                for ticket in tickets
+                                if not ticket["closed"]
+                                and ticket["owner_id"] == interaction.user.id
+                            ][0]
+                        )
                         + ">",
                     ),
                     ephemeral=True,
@@ -272,7 +323,9 @@ class Tickets(commands.Cog):
     async def handle_ticket_error(self, interaction: nextcord.Interaction) -> bool:
         if not self.is_ticket(interaction.channel):
             await interaction.response.send_message(
-                "Il faut éxecuter cette commande dans un salon de ticket.",
+                embed=nextcord.Embed(
+                    title="❌ Il faut éxecuter cette commande dans un ticket."
+                ),
                 ephemeral=True,
             )
             return True

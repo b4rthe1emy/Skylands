@@ -3,6 +3,7 @@ polls.json
 invites.json
 tickets.json
 giveways.json
+temp_ticket.json
 
 # Welcome image generation
 image.png
