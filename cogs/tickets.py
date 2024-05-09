@@ -55,7 +55,7 @@ class Tickets(commands.Cog):
         return nextcord.PermissionOverwrite(view_channel=False)
 
     @nextcord.slash_command(
-        "eenregistrer_messages_ticket",
+        "enregistrer_messages_ticket",
         "Enregistre l'historiqe des messages de ce ticket",
         default_member_permissions=nextcord.Permissions(administrator=True),
     )
