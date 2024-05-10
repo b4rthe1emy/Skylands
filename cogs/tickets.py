@@ -551,13 +551,15 @@ class Tickets(commands.Cog):
         ticket_channel: nextcord.TextChannel = self.server.get_channel(
             interaction.channel_id
         )
-
-        await self.bot.get_user(int(tickets[ticket_index]["owner_id"])).send(
-            embed=nextcord.Embed(
-                title="Ticket fermé",
+        try:
+            await self.bot.get_user(int(tickets[ticket_index]["owner_id"])).send(
+                embed=nextcord.Embed(
+                    title="Ticket fermé",
+                )
+                .add_field(name="Fermé par :", value=interaction.user.mention, inline=False)
+                .add_field(name="Raison :", value="> " + reason, inline=False),
             )
-            .add_field(name="Fermé par :", value=interaction.user.mention, inline=False)
-            .add_field(name="Raison :", value="> " + reason, inline=False),
-        )
+        except:
+            pass
 
         await ticket_channel.delete()
